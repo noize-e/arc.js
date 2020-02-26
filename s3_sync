@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+s3bkt="s3://arc.wirdlog.com" ;
+
+[[ -f .sync ]] && rm .sync ;
+
+# Sync files with extension
+aws s3 sync dist/ ${s3bkt} --size-only | \
+                                    tee -a .sync 

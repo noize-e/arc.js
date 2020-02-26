@@ -4,6 +4,13 @@ const bundler = {
       src: ['src/core/core.js', 'src/core/ext/helpers.js', 'src/core/ext/importer.js', 'src/core/model.js', 'src/core/storage.js', 'src/core/xhr/client.min.js'],
       dest: 'pre/<%= bundle %>.js',
     },
+    ext: {
+      src: ['src/ext/auth/cognito.js',
+        'src/ext/auth/facebook.js',
+        'src/ext/paypal.js',
+        'src/ext/toasts.js'],
+      dest: 'pre/<%= bundle %>.ext.js',
+    },
   },
   uglify: {
     options: {
@@ -16,6 +23,11 @@ const bundler = {
     core: {
       files: {
         'dist/<%= bundle %>.min.js': 'pre/<%= bundle %>.js',
+      },
+    },
+    ext: {
+      files: {
+        'dist/<%= bundle %>.ext.min.js': 'pre/<%= bundle %>.ext.js',
       },
     },
   },
@@ -33,9 +45,14 @@ const obfuscator = {
       debugProtection: true,
       debugProtectionInterval: true,
     },
-    main: {
+    core: {
       files: {
         'dist/<%= bundle %>.min.obf.js': ['dist/<%= bundle %>.min.js']
+      },
+    },
+    ext: {
+      files: {
+        'dist/<%= bundle %>.ext.min.obf.js': ['dist/<%= bundle %>.ext.min.js']
       },
     },
   },

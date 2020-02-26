@@ -13,3 +13,6 @@ dist/
 .merge
 .drafts
 pre
+.sync
+s3_mkr_rm
+version.arc.s3.json
