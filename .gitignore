@@ -10,3 +10,6 @@ Gemfile.lock
 src/.merge/
 src/.drafts/
 dist/
+.merge
+.drafts
+pre
