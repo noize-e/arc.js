@@ -11,6 +11,10 @@ const bundler = {
         'src/ext/toasts.js'],
       dest: 'pre/<%= bundle %>.ext.js',
     },
+    legacy: {
+      src: ['pre/<%= bundle %>.js', 'pre/<%= bundle %>.ext.js'],
+      dest: 'pre/<%= bundle %>.legacy.js',
+    },
   },
   uglify: {
     options: {
@@ -30,6 +34,11 @@ const bundler = {
         'dist/<%= bundle %>.ext.min.js': 'pre/<%= bundle %>.ext.js',
       },
     },
+    legacy: {
+      files: {
+        'dist/legacy/<%= bundle %>.min.js': 'pre/<%= bundle %>.legacy.js'
+      },
+    },
   },
 };
 
@@ -41,19 +50,33 @@ const linter = {
 
 const obfuscator = {
   javascript: {
-    options: {
-      debugProtection: true,
-      debugProtectionInterval: true,
-    },
+    // options: {
+    //   debugProtection: true,
+    //   debugProtectionInterval: true,
+    // },
     core: {
       files: {
-        'dist/<%= bundle %>.min.obf.js': ['dist/<%= bundle %>.min.js']
+        'dist/<%= bundle %>.min.obf.js': ['dist/<%= bundle %>.min.js'],
       },
     },
     ext: {
       files: {
-        'dist/<%= bundle %>.ext.min.obf.js': ['dist/<%= bundle %>.ext.min.js']
+        'dist/<%= bundle %>.ext.min.obf.js': ['dist/<%= bundle %>.ext.min.js'],
       },
+    },
+  },
+};
+
+
+const lastest = {
+  copy: {
+    core: {
+      src: 'dist/<%= bundle %>.min.obf.js',
+      dest: 'dist/lastest/core.min.js',
+    },
+    ext: {
+      src: 'dist/<%= bundle %>.ext.min.obf.js',
+      dest: 'dist/lastest/ext.min.js',
     },
   },
 };
@@ -68,6 +91,7 @@ module.exports = function(grunt) {
     concat: bundler.concat,
     uglify: bundler.uglify,
     javascript_obfuscator: obfuscator.javascript,
+    copy: lastest.copy,
   });
 
   // grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -75,7 +99,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-javascript-obfuscator');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('lint', ['jshint:afterconcat']);
-  grunt.registerTask('default', ['concat', 'uglify', 'javascript_obfuscator']);
+  grunt.registerTask('legacy', ['concat:legacy', 'uglify:legacy']);
+  grunt.registerTask('default', ['concat:core', 'concat:ext', 'uglify:core', 'uglify:ext', 'javascript_obfuscator', 'copy']);
 };

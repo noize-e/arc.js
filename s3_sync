@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 
-s3bkt="s3://arc.wirdlog.com" ;
+s3_bkt="s3://arc.wirdlog.com" ;
+cf_id="EUPIJ16M5WKP8"
 
 [[ -f .sync ]] && rm .sync ;
 
 # Sync files with extension
-aws s3 sync dist/ ${s3bkt} --size-only | \
-                                    tee -a .sync 
+# aws s3 sync dist/3.0.5/ ${s3_bkt}/3.0.5 --size-only --delete | tee -a .sync
+aws s3 sync dist/lastest/ ${s3_bkt}/lastest --size-only | tee -a .sync
+aws s3 sync dist/legacy/ ${s3_bkt}/v3 --size-only | tee -a .sync
+
+# cat .sync | \
+#   while IFS="\n" read -r line; do 
+#     file=`echo "${line}" | sed -E 's/upload:(.)+(\w+\/)?.s3:\/\/arc\.wirdlog\.com\///'`
+#     echo "'/${file}'"
+#   done 2>&1 >.paths ;
+
+# paths=$(cat .paths | tr '\n' ' ')
+# echo aws cloudfront create-invalidation --distribution-id ${cf_id} --paths ${paths} 2>&1 
+
+aws cloudfront create-invalidation --distribution-id  EUPIJ16M5WKP8 --paths '/lastest/core.min.js' '/lastest/ext.min.js' '/v3/arc.core.beta.ko.min.js'
