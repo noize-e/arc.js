@@ -3,14 +3,14 @@ ARC.js
 
 ###### [__`beta v3.0.5`__]
 
-__ARC.js__ is a Javascript library that improves the responsive UIs creation process adding a some type of decorator functionality to knockout's obersevers. In other words KO is in charge of binding the data through observers while ARC's keeps a manifest of them to better managment.
+__ARC.js__ is a Javascript library that improves the responsive UIs creation process adding some type of decorator functionality to knockout's observers. In other words, KO is in charge of binding the data through observers while ARC keeps a manifest of them for better management.
 
 Features
 --------
 
-### Third Party APIs
+### Third-Party APIs
 
-The library had been upgrade with a quiet nice features, from user authentication to payment runways. So, the 3rd party APIs supported are:
+The library had been upgraded with quite nice features, from user authentication to payment runways. So, the 3rd party APIs supported are:
 
 1.  Amazon Cognito User Pools for authentication through:
 

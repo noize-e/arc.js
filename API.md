@@ -1,4 +1,3 @@
-https://medium.com/@vovabilonenko/licenses-of-npm-dependencies-bacaa00c8c65)
 # API
 
 ## core
@@ -22,23 +21,14 @@ https://medium.com/@vovabilonenko/licenses-of-npm-dependencies-bacaa00c8c65)
     + isArray
     + goTo
     + getUrlParam
+    + scrollTo
 
-### Extentions Package
+## ext
 
-- CognitoAuth
-- FacebookLogin
-- PayPal
-- Helpers
-    + scrollTo()
-- Toasts
-    + showError()
-    + showSuccess()
-    + showPrimary()
-
-
-
-<!--
-1. Clousure Compile [[link](https://closure-compiler.appspot.com/home)]
-2. Ofuscate script [[online](https://www.javascriptobfuscator.com/Javascript-Obfuscator.aspx)]
-3. [NPM Licence](https://www.freecodecamp.org/news/how-open-source-licenses-work-and-how-to-add-them-to-your-projects-34310c3cf94/
--->
+- _ext.auth_.__CognitoAuth__
+- _ext.auth_.__FacebookLogin__
+- _ext_.__PayPal__
+- _ext_.__Toasts__
+    + showError
+    + showSuccess
+    + showPrimary
