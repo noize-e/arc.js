@@ -13,7 +13,6 @@ Features
 The library had been upgraded with quite nice features, from user authentication to payment runways. So, the 3rd party APIs supported are:
 
 1.  Amazon Cognito User Pools for authentication through:
-
     a. Username/email - password
     b. [Facebook Login](https://developers.facebook.com/docs/facebook-login)
     c. [Google Login](https://developers.google.com/identity)
