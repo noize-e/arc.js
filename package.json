@@ -1,6 +1,7 @@
 {
   "name": "arc3",
-  "version": "3.0.5",
+  "version": "3.0.7",
+  "lastVersion": "3.0.5",
   "description": "JS MVVM Framework",
   "main": "index.js",
   "dependencies": {

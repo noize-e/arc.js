@@ -1,49 +1,31 @@
-# Arc3
+ARC.js
+======
 
-__`beta`__ | __`v3.0.5`__
+###### [__`beta v3.0.5`__]
 
-## Bundles
+__ARC.js__ is a Javascript library that improves the responsive UIs creation process adding a some type of decorator functionality to knockout's obersevers. In other words KO is in charge of binding the data through observers while ARC's keeps a manifest of them to better managment.
 
-### Core Package
+Features
+--------
 
-Includes:
-    
-- XHRClient
-- Importer
-- Helpers
-    + isNull()
-    + isSet()
-    + isArray()
-    + goTo()
-    + getUrlParam()
-- Storage
-- Session
-- Manager
-- ModelView
-- FormModelView
+### Third Party APIs
 
-### Ext Package
+The library had been upgrade with a quiet nice features, from user authentication to payment runways. So, the 3rd party APIs supported are:
 
-- CognitoAuth
-- FacebookLogin
-- PayPal
-- Helpers
-    + scrollTo()
-- Toasts
-    + showError()
-    + showSuccess()
-    + showPrimary()
----
+1.  Amazon Cognito User Pools for authentication through:
 
-## Distribution
+    a. Username/email - password
+    b. [Facebook Login](https://developers.facebook.com/docs/facebook-login)
+    c. [Google Login](https://developers.google.com/identity)
 
-Compile with Grunt
+    For more information, see [Amazon Cognito documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html)
 
+Distribution
+------------
 
+The library is compiled and packaged running Grunt.
 
-<!--
-1. Clousure Compile [[link](https://closure-compiler.appspot.com/home)]
-2. Ofuscate script [[online](https://www.javascriptobfuscator.com/Javascript-Obfuscator.aspx)]
-3. [NPM Licence](https://www.freecodecamp.org/news/how-open-source-licenses-work-and-how-to-add-them-to-your-projects-34310c3cf94/
-https://medium.com/@vovabilonenko/licenses-of-npm-dependencies-bacaa00c8c65)
--->
+Getting Started
+---------------
+
+_Cooming soon..._

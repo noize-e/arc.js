@@ -103,5 +103,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('lint', ['jshint:afterconcat']);
   grunt.registerTask('legacy', ['concat:legacy', 'uglify:legacy']);
+  grunt.registerTask('debug', ['concat:core', 'concat:ext']);
   grunt.registerTask('default', ['concat:core', 'concat:ext', 'uglify:core', 'uglify:ext', 'javascript_obfuscator', 'copy']);
 };

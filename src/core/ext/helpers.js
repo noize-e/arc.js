@@ -4,6 +4,10 @@
   };
 
   global.isSet = function isSet(obj) {
+    return typeof obj !== undefined;
+  };
+
+  global.isDefined = function isSet(obj) {
     return typeof obj !== 'undefined';
   };
 
