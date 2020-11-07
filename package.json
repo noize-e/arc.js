@@ -5,7 +5,8 @@
   "description": "JS MVVM Framework",
   "main": "index.js",
   "dependencies": {
-    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony"
+    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
+    "karma": "^5.2.3"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -16,10 +17,15 @@
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-javascript-obfuscator": "^1.2.0",
-    "javascript-obfuscator": "^0.25.1"
+    "jasmine": "^3.6.3",
+    "jasmine-core": "^3.6.0",
+    "javascript-obfuscator": "^0.25.1",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-firefox-launcher": "^2.1.0",
+    "karma-jasmine": "^4.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
