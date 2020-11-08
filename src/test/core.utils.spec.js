@@ -3,36 +3,33 @@ describe("UtilsSpec", () => {
     var utils = require('../core/utils');
 
     arc.mods.push(utils)
-    arc.initmods(this);
+    arc.mod_init.call(this);
 
     it("isNull validation should be true", () => {
-        var isnull = this.isNull(null);
+        var isnull = arc.utils.isNull(null);
         expect(isnull).toEqual(true);
     });
 
     it("isSet validation should be false", () => {
-        let isset = false;
-        if(this.isSet()){
-            isset = true
-        }
+        let isset = arc.utils.isSet();
         expect(isset).toEqual(false);
     });
 
     it("isArray validation should be true", () => {
-        let isarray = this.isArray([])
+        let isarray = arc.utils.isArray([])
         expect(isarray).toEqual(true);
     });
 
     it("goTo", () => {
-        let _url = this.goTo("d", true);
+        let _url = arc.utils.goTo("d", true);
         expect(_url).toEqual("/d");
     });
 
-    xit("getUrlVars", () => {
-        //helpers.goTo("d", true);
-    });
+    xit("getUrlVars", () => {});
 
-    xit("getUrlParam", () => {
-        //helpers.getUrlParam();
-    });
+    xit("getUrlParam", () => {});
+
+    xit("serialize", () => {});
+
+    xit("log", () => {});
 });

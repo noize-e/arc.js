@@ -8,8 +8,7 @@
 (function core_utils(arc) {
     'use strict'
 
-    var prefix = '[utils] > '
-
+    var prefix = '[utils] > ';
     var utils = {
 
         isNull: function isNull(obj) {
@@ -83,26 +82,19 @@
         }
     };
 
-    var initmod = function initmod(arc){
-        var _ctx = arc.utils,
-            _glob = false;
-
-        if(arc.conf.hasOwnProperty('utils')){
-            if(arc.conf.utils.globctx){
-                _ctx = this;
-                _glob = true;
+    try{
+        module.exports = {
+            name: 'utils',
+            ref: function(argument) {
+                return utils
             }
         }
+    }catch(err){
+        arc.utils = utils;
 
         Object.keys(utils).forEach(function(k) {
-           this[k] = utils[k];
-        }, _ctx)
+            this[k] = utils[k];
+        }, this)
     }
 
-    try{
-        module.exports = { init: initmod }
-    }catch(err){
-        initmod.call(this);
-    }
-
-}).apply(this);
+}.apply(this, [this.arc = this.arc || {}]));

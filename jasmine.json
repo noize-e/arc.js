@@ -1,9 +1,13 @@
 {
     "spec_dir": "src/test/",
     "spec_files": [
-        "core.utils.spec.js"
+        "core.utils.spec.js",
+        "core.importer.spec.js",
+        "core.models.modelview.spec.js"
     ],
-    "helpers": [],
+    "helpers": [
+        "lib/vendor/knockout.min.js"
+    ],
     "stopSpecOnExpectationFailure": false,
     "random": true
 }
