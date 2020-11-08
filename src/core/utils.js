@@ -8,7 +8,8 @@
 (function core_utils(arc) {
     'use strict'
 
-    var prefix = '[utils] > ';
+    var prefix = '[utils] > ', log;
+
     var utils = {
 
         isNull: function isNull(obj) {
@@ -34,7 +35,7 @@
             try {
                 window.location.href = url;
             } catch (_unused) {
-                console.log("window object not available", url);
+                log(2, "<utils::goTo> window object not available");
             }
 
             return url;
@@ -48,8 +49,8 @@
                 window.location.href.replace(regex, function(m, key, value) {
                     vars[key] = value;
                 });
-            } catch (_unused2) {
-                console.log("window object not available", url);
+            } catch (err) {
+                log(2, "<utils::getUrlVars> window object not available");
             }
 
             return vars;
@@ -85,7 +86,8 @@
     try{
         module.exports = {
             name: 'utils',
-            ref: function(argument) {
+            ref: function(arc) {
+                log = arc.log;
                 return utils
             }
         }

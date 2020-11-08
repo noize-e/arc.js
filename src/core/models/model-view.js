@@ -38,6 +38,8 @@
 (function core_models_modelview() {
     'use strict'
 
+    var _instance, ins = 1;
+
     var clss = function(arc) {
         'use strict';
 
@@ -137,7 +139,12 @@
             return instance;
         };
 
-        return func;
+        if(_instance){
+            return _instance;
+        }
+
+        _instance = func;
+        return _instance;
     };
 
     try{

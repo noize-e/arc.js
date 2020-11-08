@@ -1,47 +1,89 @@
-(function arcStorage(global) {
-  // const prefix = '[store] > ';
-  let message;
-  let item;
+/*
+ * CHANGELOG - 8/Nov/2020
+ *
+ * - Modified: Storage class now is part of arc's global context: 'arc.storage.Storage'.
+ * - Added: New setting into arc's configuration object: 'arc.conf.storage.initialize'.
+ *    * initialize setting enables/disables Storage's instance creation on script file load.
+ *
+ */
+(function core_storage(arc){
 
-  message = 'Sorry, it looks like your browser storage has been corrupted.';
-  message += ' Please clear your local storage by deleting cache and cookies.';
+    var item,
+        lstg,
+        data = {},
+        log,
+        message = "Sorry, it looks like your browser storage has been corrupted.";
+        message += " Please clear your local storage by deleting cache and cookies.";
 
-  /**
-     * LocalStorage Object Decorator
+    /**
+     * Storage Prototype
      */
-  global.Storage = new function Storage() {
-    this.get = function(name) {
-      try {
-        item = JSON.parse(localStorage.getItem(name));
-        return item;
-      } catch (e) {
-        if (e.name === 'NS_ERROR_FILE_CORRUPTED') {
-          alert(message);
+
+    var Storage = function Storage(arc) {
+        log = arc.log;
+        try {
+            lstg = localStorage;
+        } catch (err) {
+            log(2, "<Storage::construct> Data will not persist in memory");
+            lstg = {
+                getItem: function getItem(name) {
+                    return data[name];
+                },
+                setItem: function setItem(name, item) {
+                    data[name] = item;
+                    return item;
+                }
+            };
         }
-      }
-      return null;
     };
 
-    this.add = function(name, item) {
-      try {
-        localStorage.setItem(name, JSON.stringify(item));
-        return item;
-      } catch (e) {
-        if (e.name === 'NS_ERROR_FILE_CORRUPTED') {
-          alert(message);
+    Storage.prototype = {
+
+        get: function get(name) {
+            try {
+                item = JSON.parse(lstg.getItem(name));
+                return item;
+            } catch (e) {
+                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                    log(2, message);
+                }
+            }
+
+            return null;
+        },
+
+        add: function add(name, item) {
+            try {
+                lstg.setItem(name, JSON.stringify(item));
+
+                return item;
+            } catch (e) {
+                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                    log(2, message);
+                }
+            }
+
+            return null;
+        },
+
+        remove: function remove(name) {
+            try {
+                lstg.removeItem(name);
+            } catch (e) {
+                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                    log(2, message);
+                }
+            }
         }
-      }
-      return null;
     };
 
-    this.remove = function(name) {
-      try {
-        localStorage.removeItem(name);
-      } catch (e) {
-        if (e.name === 'NS_ERROR_FILE_CORRUPTED') {
-          alert(message);
+    try{
+        module.exports = {
+            name: "memstg",
+            ref: Storage
         }
-      }
-    };
-  };
-})(this);
+    }catch(err){
+        arc.memstg = Storage;
+    }
+
+}.apply(this, [this.arc = this.arc || {}]));

@@ -3,7 +3,10 @@
     "spec_files": [
         "core.utils.spec.js",
         "core.importer.spec.js",
-        "core.models.modelview.spec.js"
+        "core.storage.spec.js",
+        "core.session.spec.js",
+        "core.models.modelview.spec.js",
+        "core.auth.cognito.spec.js"
     ],
     "helpers": [
         "lib/vendor/knockout.min.js"
