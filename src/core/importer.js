@@ -83,11 +83,11 @@
             this.dom = arc.deps.document || null;
 
             // enforces new
-            if (!(this instanceof Importer) && !instance) {
-                instance = new Importer(utils, document);
+            if (!(this instanceof Importer)) {
+                return new Importer(utils, document);
             }
 
-            return instance
+            return this
         }
 
         Importer.prototype.load = function(src, cb) {
