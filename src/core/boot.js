@@ -3,9 +3,30 @@
 
     var arc = {
         mods: [],
+        models: {},
         deps: {
-            document: null,
             window: null
+        }
+    }
+
+    arc.deps.document = {
+        getElementById: function(identity) {
+            // console.log("[mockup] getElementById", identity)
+            return {
+                identity: identity,
+                className: "mockup-classname"
+            }
+        }
+    }
+
+    arc.deps.ko = {
+        observable: function(args) {
+            // console.log("[mockup] observable", arguments);
+            return this.observable
+        },
+        applyBindings: function(args){
+            // console.log("[mockup] applyBindings", arguments);
+            return this.applyBindings
         }
     }
 
