@@ -5,7 +5,7 @@
     arc = {
         mods: [],
         models: {},
-        stdout: !1,
+        stdout: !0,
         deps: {
             window: null
         }

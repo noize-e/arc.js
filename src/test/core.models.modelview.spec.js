@@ -1,6 +1,6 @@
 describe("ModelViewSpec", () => {
-    var arc = require('../core/boot');
-    var modelview = require('../core/models/model-view');
+    const arc = require('../core/boot');
+    const modelview = require('../core/models/model-view');
 
     it("New ModelView instance should be created", () => {
         arc.mods.push(modelview)
