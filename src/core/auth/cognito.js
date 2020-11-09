@@ -1,8 +1,11 @@
-(function core_auth_cognito(arc) {
+(function core_auth_cognito() {
 
-    var instance, ins=1;
+    var instance,
+        modexport = {
+            name: "cognito"
+        };
 
-    var clss = (function() {
+    modexport.ref = (function() {
         'use strict';
 
         var _userAttributes = [],
@@ -184,16 +187,9 @@
     }());
 
     try{
-        module.exports = {
-            name: "cognito",
-            ref: clss
-        }
+        module.exports = modexport
     }catch(err){
-        /*
-         * Call function clss() to get ModelView's static
-         * function caller reference
-         */
-        arc.cognito = clss;
+        this.arc.exports(modexport);
     }
 
-}.apply(this, [this.arc = this.arc || {}]));
+}).apply(this);

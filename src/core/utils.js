@@ -5,98 +5,98 @@
  * 2. Removed 'scrollTo' function. Now lives in the extension bundle
  * 3. Added: Test spec: 'src/test/core.utils.spec.js'
  */
-(function core_utils(arc) {
-    'use strict'
+(function core_utils(){
 
-    var prefix = '[utils] > ', log;
+    var modexport = {
+        name: 'utils'
+    }
 
-    var utils = {
+    modexport.ref = function(arc) {
+        'use strict';
 
-        isNull: function isNull(obj) {
-            return obj == null;
-        },
+        var prefix = '[utils] > ',
+            log = arc.log,
 
-        isSet: function isSet(obj) {
-            return typeof obj !== "undefined"; // return typeof obj !== undefined;
-        },
+        utils = {
 
-        isArray: function isArray(obj) {
-            if (typeof Array.isArray === "undefined") {
-                return Object.prototype.toString.call(obj) === "[object Array]";
-            } else {
-                return Array.isArray(obj);
-            }
-        },
+            isNull: function isNull(obj) {
+                return obj == null;
+            },
 
-        goTo: function goTo(path, notExt, external) {
-            var local = external ? "" : "/";
-            var url = local + path + (notExt ? "" : ".html");
+            isSet: function isSet(obj) {
+                return typeof obj !== "undefined"; // return typeof obj !== undefined;
+            },
 
-            try {
-                window.location.href = url;
-            } catch (_unused) {
-                log(2, "<utils::goTo> window object not available");
-            }
-
-            return url;
-        },
-
-        getUrlVars: function getUrlVars() {
-            var vars = {};
-            var regex = /[?&]+([^=&]+)=([^&]*)/gi;
-
-            try {
-                window.location.href.replace(regex, function(m, key, value) {
-                    vars[key] = value;
-                });
-            } catch (err) {
-                log(2, "<utils::getUrlVars> window object not available");
-            }
-
-            return vars;
-        },
-
-        getUrlParam: function getUrlParam(parameter, defaultvalue) {
-            var urlparameter = defaultvalue;
-
-            if (window.location.href.indexOf(parameter) > -1) {
-                urlparameter = getUrlVars()[parameter];
-            }
-
-            return urlparameter;
-        },
-
-        serialize: function serialize(obj) {
-            var str = [];
-
-            for (var p in obj) {
-                if (obj.hasOwnProperty(p)) {
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+            isArray: function isArray(obj) {
+                if (typeof Array.isArray === "undefined") {
+                    return Object.prototype.toString.call(obj) === "[object Array]";
+                } else {
+                    return Array.isArray(obj);
                 }
+            },
+
+            goTo: function goTo(path, notExt, external) {
+                var local = external ? "" : "/";
+                var url = local + path + (notExt ? "" : ".html");
+
+                try {
+                    window.location.href = url;
+                } catch (_unused) {
+                    log(2, "<utils::goTo> window object not available");
+                }
+
+                return url;
+            },
+
+            getUrlVars: function getUrlVars() {
+                var vars = {};
+                var regex = /[?&]+([^=&]+)=([^&]*)/gi;
+
+                try {
+                    window.location.href.replace(regex, function(m, key, value) {
+                        vars[key] = value;
+                    });
+                } catch (err) {
+                    log(2, "<utils::getUrlVars> window object not available");
+                }
+
+                return vars;
+            },
+
+            getUrlParam: function getUrlParam(parameter, defaultvalue) {
+                var urlparameter = defaultvalue;
+
+                if (window.location.href.indexOf(parameter) > -1) {
+                    urlparameter = getUrlVars()[parameter];
+                }
+
+                return urlparameter;
+            },
+
+            serialize: function serialize(obj) {
+                var str = [];
+
+                for (var p in obj) {
+                    if (obj.hasOwnProperty(p)) {
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                }
+
+                return str.join("&");
+            },
+
+            log: function log(message, data, prefix) {
+                console.log(this.prefix || prefix, message, data);
             }
+        };
 
-            return str.join("&");
-        },
-
-        log: function log(message, data, prefix) {
-            console.log(this.prefix || prefix, message, data);
-        }
+        return utils;
     };
 
     try{
-        module.exports = {
-            name: 'utils',
-            ref: function(arc) {
-                log = arc.log;
-                return utils
-            }
-        }
+        module.exports = modexport
     }catch(err){
-        arc.utils = utils;
-
-        Object.keys(utils).forEach(function(k) {
-            this[k] = utils[k];
-        }, this)
+        this.arc.exports(modexport)
     }
 
-}.apply(this, [this.arc = this.arc || {}]));
+}).apply(this);

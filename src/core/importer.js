@@ -23,9 +23,12 @@
  **/
 (function core_ext_importer(arc){
 
-    var instance;
+    var instance,
+        modexport = {
+            name: "importer"
+        }
 
-    var clss = (function() {
+    modexport.ref = (function() {
         'use strict';
 
         var src_paths = [];
@@ -108,12 +111,10 @@
     }());
 
     try{
-        module.exports = {
-            name: "Importer",
-            ref: clss
-        }
+        module.exports = modexport
     }catch(err){
-        arc.Importer = clss;
+        this.arc.exports(modexport);
     }
+
 
 }).apply(this, [this.arc = this.arc || {}]);

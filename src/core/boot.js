@@ -1,15 +1,16 @@
 (function(){
 
-    var lvls = ["[info]", "[warn]", "[error]"];
-    var arc = {
+    var lvls = ["[info]", "[warn]", "[error]"],
+
+    arc = {
         mods: [],
         models: {},
+        stdout: !1,
         deps: {
             window: null
         }
     }
 
-    arc.stdout = !1;
     arc.log = function(lvl, msg, data){
         if(arc.stdout)
             console.log(lvls[(parseInt(lvl)-1)], msg, (data || ''))
@@ -108,6 +109,10 @@
                 AuthenticationDetails: function(d){}
             }
         }
+    }
+
+    arc.exports = function(mod){
+        this.mods.push(mod);
     }
 
     arc.mod_init = function(){

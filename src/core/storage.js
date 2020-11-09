@@ -8,7 +8,10 @@
  */
 (function core_storage(arc){
 
-    var item,
+    var modexport = {
+            name: "memstg"
+        },
+        item,
         lstg,
         data = {},
         log,
@@ -18,72 +21,75 @@
     /**
      * Storage Prototype
      */
+    modexport.ref = (function(){
+        'use strict'
 
-    var Storage = function Storage(arc) {
-        log = arc.log;
-        try {
-            lstg = localStorage;
-        } catch (err) {
-            log(2, "<Storage::construct> Data will not persist in memory");
-            lstg = {
-                getItem: function getItem(name) {
-                    return data[name];
-                },
-                setItem: function setItem(name, item) {
-                    data[name] = item;
+        var Storage = function Storage(arc) {
+            log = arc.log;
+            try {
+                lstg = localStorage;
+            } catch (err) {
+                log(2, "<Storage::construct> Data will not persist in memory");
+                lstg = {
+                    getItem: function getItem(name) {
+                        return data[name];
+                    },
+                    setItem: function setItem(name, item) {
+                        data[name] = item;
+                        return item;
+                    }
+                };
+            }
+        };
+
+        Storage.prototype = {
+
+            get: function get(name) {
+                try {
+                    item = JSON.parse(lstg.getItem(name));
                     return item;
+                } catch (e) {
+                    if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                        log(2, message);
+                    }
                 }
-            };
-        }
-    };
 
-    Storage.prototype = {
+                return null;
+            },
 
-        get: function get(name) {
-            try {
-                item = JSON.parse(lstg.getItem(name));
-                return item;
-            } catch (e) {
-                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                    log(2, message);
+            add: function add(name, item) {
+                try {
+                    lstg.setItem(name, JSON.stringify(item));
+
+                    return item;
+                } catch (e) {
+                    if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                        log(2, message);
+                    }
                 }
-            }
 
-            return null;
-        },
+                return null;
+            },
 
-        add: function add(name, item) {
-            try {
-                lstg.setItem(name, JSON.stringify(item));
-
-                return item;
-            } catch (e) {
-                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                    log(2, message);
-                }
-            }
-
-            return null;
-        },
-
-        remove: function remove(name) {
-            try {
-                lstg.removeItem(name);
-            } catch (e) {
-                if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                    log(2, message);
+            remove: function remove(name) {
+                try {
+                    lstg.removeItem(name);
+                } catch (e) {
+                    if (e.name === "NS_ERROR_FILE_CORRUPTED") {
+                        log(2, message);
+                    }
                 }
             }
-        }
-    };
+        };
+
+        return Storage;
+    }());
 
     try{
-        module.exports = {
-            name: "memstg",
-            ref: Storage
-        }
+        module.exports = modexport
     }catch(err){
-        arc.memstg = Storage;
+        this.arc.exports(modexport);
     }
 
-}.apply(this, [this.arc = this.arc || {}]));
+
+}).apply(this);

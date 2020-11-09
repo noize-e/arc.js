@@ -38,7 +38,10 @@
 (function core_models_modelview() {
     'use strict'
 
-    var _instance, ins = 1;
+    var _instance, ins = 1,
+        modexport = {
+            name: "modelView"
+        };
 
     var clss = function(arc) {
         'use strict';
@@ -148,16 +151,15 @@
     };
 
     try{
-        module.exports = {
-            name: "modelView",
-            ref: clss
-        }
+        modexport.ref = clss;
+        module.exports = modexport
     }catch(err){
         /*
          * Call function clss() to get ModelView's static
          * function caller reference
          */
-        arc.modelView = clss();
+        modexport.ref = clss()
+        this.arc.exports(modexport);
     }
 
-}.apply(this, [this.arc = this.arc || {models:{}}]));
+}).apply(this);

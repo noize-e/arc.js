@@ -7,9 +7,13 @@
  *    * initialize setting enables/disables Session's instance creation on script file load.
  *
  */
-(function core_session(arc) {
+(function core_session() {
 
-    var clss = (function() {
+    var modexport = {
+        name: "session"
+    }
+
+    modexport.ref = (function() {
         'use strict';
 
         var _sess, _log;
@@ -97,16 +101,10 @@
     }());
 
     try{
-        module.exports = {
-            name: "session",
-            ref: clss
-        }
+        module.exports = modexport
     }catch(err){
-        /*
-         * Call function clss() to get ModelView's static
-         * function caller reference
-         */
-        arc.session = clss;
+        this.arc.exports(modexport);
     }
 
-}.apply(this, [this.arc = this.arc || {models:{}}]));
+
+}).apply(this);
