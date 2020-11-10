@@ -1,7 +1,7 @@
 ARC.js
 ======
 
-###### [__`beta v3.0.5`__]
+###### [__`beta v3.5`__]
 
 __ARC.js__ is a Javascript library that improves the responsive UIs creation process adding some type of decorator functionality to knockout's observers. In other words, KO is in charge of binding the data through observers while ARC keeps a manifest of them for better management.
 
