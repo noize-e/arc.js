@@ -26,7 +26,7 @@ To execute the specs from the root of the project run:
 
 To see the installation process check it out theirs [documentation](https://jasmine.github.io/setup/nodejs.html).
 
-## Distributiom
+## Distribution
 
 To create the distribution source files, install [__Grunt__](https://gruntjs.com/).
 
