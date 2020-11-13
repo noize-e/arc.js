@@ -75,10 +75,10 @@
             element.async = false;
             element.onload = onload.bind(this);
             this.dom.head.appendChild(element);
-        };
+        }
 
 
-        function Importer(arc) {
+        function Importer (arc){
             this.callback = null;
             // required args
             this.utils = arc.utils;
@@ -90,7 +90,7 @@
                 return new Importer(utils, document);
             }
 
-            return this
+            return this;
         }
 
         Importer.prototype.load = function(src, cb) {
@@ -111,10 +111,10 @@
     }());
 
     try{
-        module.exports = modexport
+        module.exports = modexport;
     }catch(err){
         this.arc.exports(modexport);
     }
 
 
-}).apply(this, [this.arc = this.arc || {}]);
+}).apply(this);

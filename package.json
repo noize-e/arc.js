@@ -1,8 +1,8 @@
 {
-  "name": "arc3",
-  "version": "3.0.7",
-  "lastVersion": "3.0.5",
-  "description": "JS MVVM Framework",
+  "name": "arc",
+  "version": "4.0.1",
+  "lastVersion": "4.0.0",
+  "description": "ARC is a javascript framework",
   "main": "index.js",
   "dependencies": {
     "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/nzr-team/arc.js.git"
+    "url": "git+ssh://git@github.com:noize-e/arc.js.git"
   },
   "keywords": [
     "arc",
@@ -38,5 +38,5 @@
   ],
   "author": "@noizee Francisco Cepeda",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/nzr-team/arc.js#readme"
+  "homepage": "https://github.com/noize-e/arc.js"
 }

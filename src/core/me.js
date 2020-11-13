@@ -183,4 +183,4 @@
     }
 
 
-}).apply(this]);
+}).apply(this);

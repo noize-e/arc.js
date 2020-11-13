@@ -1,108 +1,119 @@
 const bundler = {
-  concat: {
-    core: {
-      src: ['src/core/core.js', 'src/core/ext/helpers.js', 'src/core/ext/importer.js', 'src/core/model.js', 'src/core/storage.js', 'src/core/xhr/client.min.js'],
-      dest: 'pre/<%= bundle %>.js',
+    concat: {
+        main: {
+
+            src: ['src/core/boot.js',
+                'src/core/importer.js',
+                'src/core/manager.js',
+                'src/core/me.js',
+                'src/core/session.js',
+                'src/core/storage.js',
+                'src/core/util.js',
+                'src/core/model/form-model-view.js',
+                'src/core/model/model-view.js',
+                'src/core/auth/cognito.js',
+                'src/core/xhr/xclient.js'
+            ],
+            dest: 'pre/<%= bundle %>.js'
+        },
+
+        vendor: {
+            src: ['lib/jquery.min.js',
+                  'lib/bootstrap.bundle.min.js',
+                  'lib/popper.min.js',
+                  'lib/knockout.min.js',
+                  'lib/aws/cognito-sdk.min.js',
+                  'lib/aws/cognito-identity.min.js'],
+            dest: 'pre/<%= bundle %>.vendor.js'
+        }
+
     },
-    ext: {
-      src: ['src/ext/auth/cognito.js',
-        'src/ext/auth/facebook.js',
-        'src/ext/paypal.js',
-        'src/ext/toasts.js'],
-      dest: 'pre/<%= bundle %>.ext.js',
-    },
-    legacy: {
-      src: ['pre/<%= bundle %>.js', 'pre/<%= bundle %>.ext.js'],
-      dest: 'pre/<%= bundle %>.legacy.js',
-    },
-  },
-  uglify: {
-    options: {
-      compress: {
-        drop_console: true,
-      },
-      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= today %> */',
-    },
-    core: {
-      files: {
-        'dist/<%= bundle %>.min.js': 'pre/<%= bundle %>.js',
-      },
-    },
-    ext: {
-      files: {
-        'dist/<%= bundle %>.ext.min.js': 'pre/<%= bundle %>.ext.js',
-      },
-    },
-    legacy: {
-      files: {
-        'dist/legacy/<%= bundle %>.min.js': 'pre/<%= bundle %>.legacy.js'
-      },
-    },
-  },
+
+    uglify: {
+        options: {
+            compress: {
+                drop_console: true
+            },
+            banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+                '<%= today %> */'
+        },
+        main: {
+            files: {
+                'dist/<%= bundle %>.min.js': 'pre/<%= bundle %>.js'
+            }
+        },
+        vendor: {
+            files: {
+                'dist/<%= bundle %>.vendor.min.js': 'pre/<%= bundle %>.vendor.js'
+            }
+        }
+    }
+
 };
 
 const linter = {
-  js: {
-    afterconcat: ['pre/<%= bundle %>.js'],
-  },
+    js: {
+        afterconcat: ['pre/<%= bundle %>.js']
+    }
 };
 
 const obfuscator = {
-  javascript: {
-    // options: {
-    //   debugProtection: true,
-    //   debugProtectionInterval: true,
-    // },
-    core: {
-      files: {
-        'dist/<%= bundle %>.min.obf.js': ['dist/<%= bundle %>.min.js'],
-      },
-    },
-    ext: {
-      files: {
-        'dist/<%= bundle %>.ext.min.obf.js': ['dist/<%= bundle %>.ext.min.js'],
-      },
-    },
-  },
+    javascript: {
+        // options: {
+        //   debugProtection: true,
+        //   debugProtectionInterval: true,
+        // },
+        main: {
+            files: {
+                'dist/<%= bundle %>.min.js': ['dist/<%= bundle %>.min.js']
+            }
+        },
+        ext: {
+            files: {
+                'dist/<%= bundle %>.ext.min.js': ['dist/<%= bundle %>.ext.min.js']
+            }
+        }
+    }
 };
 
 
 const lastest = {
-  copy: {
-    core: {
-      src: 'dist/<%= bundle %>.min.obf.js',
-      dest: 'dist/lastest/core.min.js',
-    },
-    ext: {
-      src: 'dist/<%= bundle %>.ext.min.obf.js',
-      dest: 'dist/lastest/ext.min.js',
-    },
-  },
+    copy: {
+        main: {
+            src: 'dist/<%= bundle %>.min.js',
+            dest: 'dist/lastest/<%= pkg.name %>-<%= pkg.version %>.min.js'
+        },
+        vendor: {
+            src: 'dist/<%= bundle %>.vendor.min.js',
+            dest: 'dist/lastest/<%= pkg.name %>-<%= pkg.version %>.vendor.min.js'
+        }
+    }
 };
 
-module.exports = function(grunt) {
-  // Project configuration.
-  grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    today: '<%= grunt.template.today("yyyy-mm-dd") %>',
-    bundle: '<%= pkg.version %>/<%= today %>/<%= pkg.name %>.core.<%= pkg.version %>',
-    jshint: linter.js,
-    concat: bundler.concat,
-    uglify: bundler.uglify,
-    javascript_obfuscator: obfuscator.javascript,
-    copy: lastest.copy,
-  });
+module.exports = function (grunt) {
+    'use strict';
 
-  // grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-uglify-es');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-javascript-obfuscator');
-  grunt.loadNpmTasks('grunt-contrib-copy');
+    // Project configuration.
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        today: '<%= grunt.template.today("yyyy-mm-dd") %>',
+        bundle: '<%= pkg.version %>/<%= today %>/<%= pkg.name %>-<%= pkg.version %>',
+        jshint: linter.js,
+        concat: bundler.concat,
+        uglify: bundler.uglify,
+        javascript_obfuscator: obfuscator.javascript,
+        copy: lastest.copy
+    });
 
-  grunt.registerTask('lint', ['jshint:afterconcat']);
-  grunt.registerTask('legacy', ['concat:legacy', 'uglify:legacy']);
-  grunt.registerTask('debug', ['concat:core', 'concat:ext']);
-  grunt.registerTask('default', ['concat:core', 'concat:ext', 'uglify:core', 'uglify:ext', 'javascript_obfuscator', 'copy']);
+    // grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-uglify-es');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-javascript-obfuscator');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+
+    grunt.registerTask('lint', ['jshint:afterconcat']);
+    grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy']);
+    grunt.registerTask('vendor', ['concat:vendor', 'uglify:vendor', 'copy:vendor']);
+    grunt.registerTask('default', ['concat:main', 'uglify:main', 'copy:main']);
 };
