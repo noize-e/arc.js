@@ -7,8 +7,7 @@
         "core.session.spec.js",
         "core.models.modelview.spec.js",
         "core.models.formmodelview.spec.js",
-        "core.auth.cognito.spec.js",
-        "core.manager.spec.js"
+        "core.auth.cognito.spec.js"
     ],
     "helpers": [
         "lib/vendor/knockout.min.js"

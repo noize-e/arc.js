@@ -9,39 +9,41 @@
 (function core_manager() {
     'use strict';
 
-    var modexport = {
-        name: "manager"
-    }
+    var _arc,
+        modexport = {
+            name: "mng"
+        };
 
     modexport.ref = (function() {
         'use strict';
 
-        var models = [];
-        var directory = {};
+        var models = [],
+            directory = {},
+            manifest = {},
+            ready = false;
 
-        var Manager = function Manager() {
-            this.bootstrapped = false;
+        function Manager(arc){
+            _arc = arc
         };
 
         Manager.prototype = {
-            register: function register(model) {
-                models.push(model);
-                directory[model.identity] = model;
+            newmdl: function newmdl(n, c) {
+                var mdl = _arc.modelView(n, c)
+                _arc.mdl[n] = mdl;
 
-                if (this.bootstrapped) {
-                    model.init();
+                if (ready) {
+                    mdl.init();
                 }
             },
-            bootstrap: function bootstrap() {
-                for (var i = 0; i < models.length; i++) {
-                    models[i].init();
-                }
-
-                this.bootstrapped = true;
+            boot: function bootstrap() {
+                Object.keys(_arc.mdl).forEach(function(k) {
+                    _arc.mdl[k].init()
+                });
+                ready = true;
             },
-            find: function find(model) {
+            find: function find(n) {
                 try {
-                    return directory[model];
+                    return _arc.mdl[n];
                 } catch (err) {
                     return null;
                 }
@@ -54,7 +56,7 @@
 
 
     try{
-        module.exports = modexport
+        module.exports = modexport;
     }catch(err){
         this.arc.exports(modexport);
     }

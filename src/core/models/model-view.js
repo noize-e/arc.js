@@ -2,12 +2,12 @@
  *
  *  MODELVIEW STRUCTURE
  *
- *  [model:id] > instance wrapper {
+ *  [model:id] > instance mv {
  *      component: {
- *          identity: 'id',
+ *          uid: 'id',
  *          className: 'mockup-classname'
  *      },
- *      identity: 'id',
+ *      uid: 'id',
  *      active: [Function: observable],
  *      loader: [Function: observable],
  *      error: [Function: observable],
@@ -36,129 +36,145 @@
  *   vmod.init();
  */
 (function core_models_modelview() {
-    'use strict'
+    'use strict';
 
-    var _instance, ins = 1,
-        modexport = {
-            name: "modelView"
-        };
+    var modexport = {
+        name: "new_mv"
+    };
 
-    var clss = function(arc) {
+    modexport.ref = function(arc) {
         'use strict';
 
-        var dom = arc.deps.document;
-        var ko = arc.deps.ko;
+        var rdy = 0;
 
-        /**
-         * ModelView static function caller
-         * @param {type} identity -- DOM element ID.
-         * @param {type} callback -- Model setup callback. Executed
-         *                           before wrapper instance creation
-         */
-        var func = function(identity, callback) {
-            'use strict';
+        var mngr = {
+            reg: function(mdl) {
+                if(!mngr.find(mdl.uid))
+                    arc.mdl[mdl.uid] = mdl;
 
-            var instance = arc.models[identity];
-            var prefix = "[model:" + identity + "] >";
-            var log = function log(message, data) {
-                console.log(prefix, message, data);
+                if (!!rdy)
+                    mdl.init();
+
+                mdl.reg(mngr);
+
+                return mdl;
+            },
+
+            boot: function() {
+                Object.keys(arc.mdl).forEach(function(k) {
+                    arc.mdl[k].init()
+                });
+                rdy++;
+            },
+
+            find: function(n) {
+                if(arc.mdl.indexOf(n) !== -1){
+                    return arc.mdl[n];
+                }
+                return 0;
             }
-
-            /**
-             * ModelView object for new instances
-             * @param {type} identity -- DOM element ID.
-             * @param {type} callback -- Model setup callback. Executed
-             *                           before wrapper instance creation
-             */
-            var wrapper = function(identity, callback){
-                this.component = dom.getElementById(identity);
-                this.identity = identity;
-                this.active = ko.observable(false);
-                this.loader = ko.observable(false);
-                this.error = ko.observable(false);
-                this.log = log;
-
-                this.on = function on() {},
-
-                this.showError = function showError(err) {
-                    this.error(err);
-                    setTimeout(this.error.bind(null, null), 2000);
-                };
-
-                this.show = function show() {
-                    this.active(true);
-
-                    if (this.component.className.indexOf("active") < 0) {
-                        this.component.className += " active";
-                    }
-
-                    this.component.className = this.component.className.replace(
-                        new RegExp("(^| )hidden($| )", "g"),
-                        " "
-                    );
-                    this.component.className = this.component.className.replace(
-                        new RegExp("(^| )off($| )", "g"),
-                        " "
-                    );
-                };
-
-                this.hide = function hide() {
-                    // create pattern to find class name
-                    this.component.className = this.component.className.replace(
-                        new RegExp("(^| )active($| )", "g"),
-                        " "
-                    );
-
-                    if (this.component.className.indexOf("active") < 0) {
-                        this.component.className += " off";
-                    }
-
-                    this.active(false);
-                };
-
-                this.showLoader = function showLoader() {
-                    this.loader(true);
-                };
-
-                this.hideLoader = function hideLoader() {
-                    this.loader(false);
-                };
-
-                this.init = function init() {
-                    ko.applyBindings(this, this.component);
-                };
-
-                // log("instance", this)
-
-                callback.call(this, log.bind(this));
-            };
-
-            // enforces new
-            if (!(instance instanceof wrapper)) {
-                arc.models[identity] = new wrapper(identity, callback);
-                instance = arc.models[identity];
-            }
-
-            return instance;
-        };
-
-        if(_instance){
-            return _instance;
         }
 
-        _instance = func;
-        return _instance;
+        var mv = function mv(uid, cb){
+            var _doc = arc.deps.document,
+                _ko = arc.deps.ko;
+
+            function _obs(n, v){
+                this[n] = _ko.observable(v);
+            }
+
+            _obs.apply(this, ['active', false]);
+            _obs.apply(this, ['loader', false]);
+            _obs.apply(this, ['msg', false]);
+
+            this.uid = uid;
+
+            this._u = arc.utils;
+            this._d = _doc.getElementById(uid);
+            this._o = _obs
+
+            this.alert = function(msg){
+                this.msg(msg);
+                setTimeout(
+                    this.msg.bind(null, null),
+                    2000)
+            }
+
+            this.on = function on(e, d){
+                console.warn("Implement runtime callback", e, d)
+            };
+
+            this.reg = function reg(mngr){
+                this.mngr = mngr;
+            }
+
+            this.show = function show() {
+                this.active(!0);
+
+                if (this._d.className.indexOf("active") < 0) {
+                    this._d.className += " active";
+                }
+
+                this._d.className = this._d.className.replace(
+                    new RegExp("(^| )hidden($| )", "g"),
+                    " "
+                );
+                this._d.className = this._d.className.replace(
+                    new RegExp("(^| )off($| )", "g"),
+                    " "
+                );
+            };
+
+            this.hide = function hide() {
+                // create pattern to find class name
+                this._d.className = this._d.className.replace(
+                    new RegExp("(^| )active($| )", "g"),
+                    " "
+                );
+
+                if (this._d.className.indexOf("active") < 0) {
+                    this._d.className += " off";
+                }
+
+                this.active(!1);
+            };
+
+            this.init = function initBinding() {
+                try{
+                    _ko.applyBindings(this, this._d);
+                }catch(err){
+                    console.error("Error:initBinding", err)
+                }
+            };
+
+            cb.call(this, function log(msg, dt) {
+                console.log("Log:model:", uid, msg, dt);
+            });
+        };
+
+
+        function Factory(uid, cb) {
+            'use strict';
+
+            var wpr = mngr.find(uid);
+
+            if (!(wpr instanceof mv)) {
+                wpr = mngr.reg(new mv(uid, cb))
+            }
+
+            return wpr;
+        };
+
+        return Factory;
     };
 
     try{
-        modexport.ref = clss;
         module.exports = modexport
     }catch(err){
         /*
          * Call function clss() to get ModelView's static
          * function caller reference
          */
-        modexport.ref = clss()
         this.arc.exports(modexport);
     }
 

@@ -1,9 +1,10 @@
 describe("StorageSpec", () => {
     var arc = require('../core/boot');
+    const deps = require('../data/deps');
     var storage = require('../core/storage');
 
-    arc.mods.push(storage)
-    arc.mod_init();
+    arc.exports(storage)
+    arc.init({}, deps);
 
     it("Data should be added into storage", () => {
         arc.memstg.add("data", "mock")

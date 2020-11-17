@@ -23,16 +23,15 @@
                 return instance;
             }
 
+            _log = arc.log;
+            _sess = arc.session;
+
             this.cognito = arc.deps.aws.cognito;
-
-            _sess = arc.session
-            _log = arc.log
-
-            this.cognito.sdk.config.region = arc.deps.aws.region;
+            this.cognito.sdk.config.region = arc.conf.cognito.region;
 
             _userPool = new this.cognito.identity.CognitoUserPool({
-                UserPoolId: this.cognito.pool_id,
-                ClientId: this.cognito.pool_client_id
+                UserPoolId: arc.conf.cognito.poolId,
+                ClientId: arc.conf.cognito.clientId
             });
 
             instance = this;

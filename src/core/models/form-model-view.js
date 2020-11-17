@@ -1,8 +1,8 @@
-(function core_model_view(arc, ko) {
+(function core_model_view() {
 
     var _arc,
         modexport = {
-            name: 'formModelView'
+            name: 'new_fmv'
         };
 
     modexport.ref = (function() {
@@ -14,62 +14,58 @@
                 try {
                     callback.call(context);
                 } catch (error) {
-                    console.log(error); // var inputError = context[context.inputError];
+                    console.error("Error:validateInputsData", error);
+                    // var inputError = context[context.inputError];
                     // inputError(true);
                     // setTimeout(function() { inputError(false); }, 2000);
-
                     context.on("Input_Error", context.inputError);
                 }
             };
         }
 
-        function getInputValue(inputName) {
-            var inputValue = this[inputName]();
+        function getInputValue(n) {
+            var iv = this[n]();
 
-            if (!inputValue) {
-                this.inputError = inputName + "_error";
-                throw new Error("InputError in arc.core.model.getInputValue, line: 37");
+            if (!iv) {
+                this.inputError = n + "_error";
+                throw new Error("Error:getInputValue", "R");
             }
 
-            this.loader = _arc.deps.ko.observable(false);
-            this.error = _arc.deps.ko.observable(null);
-            return inputValue.toLowerCase();
+            return iv.toLowerCase();
         }
 
         /**
          * @param::fields  Required input fields
          * @param::callback  Executed on sumbit and fields validation complete
          */
-        var FormIO = function FormIO(fields) {
-            this.onSubmit =
-                this.onSubmit ||
-                function() {
-                    console.log("CallbackError: Setup submit's callback method");
-                }; // Initialize fields as observables
+        var FormIO = function FormIO(reqs){
+            this._r = reqs;
+            this._r.forEach(function(fl){
+                this._o.apply(this, [fl, null]);
+                this._o.apply(this, ["$_err".replace('$', fl), false])
+            }, this);
 
-            for (var _i = 0; _i < fields.length; _i++) {
-                this[fields[_i]] = _arc.deps.ko.observable(null);
-                this[fields[_i] + "_error"] = _arc.deps.ko.observable(false);
-            }
             /**
              * On submit request executes the input validator
              *
              * On a successful validation cycle it calls the
              * given callback, otherwise throws an exception
              */
+            this.onSubmit = function() {
+                console.log("Implement submit runtime callback");
+            };
 
             this.submit = validateInputsData(function validate(context) {
-                var values = {};
+                var vs = {};
 
-                for (i = 0; i < fields.length; i++) {
-                    values[fields[i]] = getInputValue.call(this, fields[i]);
-                }
+                this._r.forEach(function(fl){
+                    vs[fl] = getInputValue.call(this, fl);
+                }, this);
 
                 try {
-                    this.onSubmit(values);
-                } catch (e) {
-                    // statements
-                    console.log(e);
+                    this.onSubmit(vs);
+                } catch (err) {
+                    console.error(err);
                 }
             }, this);
         };
@@ -81,23 +77,21 @@
          * @param {Function} callback [description]
          * @return {Function} model
          */
-
-        var FormModelView = function FormModelView(identity, fields, callback) {
-            var model = _arc.modelView.apply(this, [identity, callback]);
-            FormIO.apply(model, [fields]);
-            return model;
-        };
-
         return function(arc){
             _arc = arc
-            return FormModelView
+
+            return function(uid, ipts, cb) {
+                var mld = arc.new_mv(uid, cb);
+                FormIO.apply(mld, [ipts]);
+                return mld;
+            };
         };
     }());
 
     try{
         module.exports = modexport
     }catch(err){
-        arc.mods.push(modexport);
+        this.arc.exports(modexport);
     }
 
 }).apply(this);

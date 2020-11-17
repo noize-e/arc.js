@@ -24,9 +24,8 @@
  *      xclient.setAuthorization(Session.getIdToken());
  *
  */
-(function core_xhr_xclient(arc) {
-    var HTTP_METHODS = ["GET", "POST", "PUT", "DELETE"],
-        modexport = {
+(function core_xhr_xclient() {
+    var modexport = {
             name: "xclient"
         };
 
@@ -51,26 +50,27 @@
             return _typeof(obj);
         }
 
-        var xclient = function xclient() {
+        var xclient = function xclient(arc) {
             var _queryString = null,
-                _invokeUrl,
                 _requestHandler,
-
+                _invokeUrl = arc.conf.api.gateway.invokeUrl,
+                _httpMethods = arc.conf.api.httpMethods,
                 /*
                  * By default all request are treated as 'application/json' type.
                  * For Cross Origin Resource Sharing the 'Allow' header is set
                  * with a wildcard scope.
                  */
                 _requestConfig = {
-                    contentType: "application/json",
-                    dataType: "json",
-                    headers: {
-                        Allow: "*"
-                    }
+                    contentType: arc.conf.api.contentType,
+                    dataType: arc.conf.api.dataType,
+                    headers: arc.conf.api.headers
                 };
 
+                _requestConfig.headers["x-api-key"] = arc.conf.api.gateway.key;
+
+
             function validateHttpMethod(method) {
-                if (HTTP_METHODS.indexOf(method) < 0) {
+                if (_httpMethods.indexOf(method) < 0) {
                     throw new Error("InvalidMethod");
                 }
 

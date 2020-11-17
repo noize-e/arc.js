@@ -9,7 +9,7 @@
  * 3. C.R.U.D. methods' arguments changed, now: 'req', 'context', 'auth' & 'sync'.
  *
  */
-(function core_me(arc) {
+(function core_me() {
 
     var modexport = {
         name: "me"
@@ -179,7 +179,7 @@
     try{
         module.exports = modexport
     }catch(err){
-        arc.mods.push(modexport);
+        this.arc.exports(modexport);
     }
 
 

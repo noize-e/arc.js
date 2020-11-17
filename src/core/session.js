@@ -7,7 +7,8 @@
  *    * initialize setting enables/disables Session's instance creation on script file load.
  *
  */
-(function core_session() {
+(function core_session(){
+    'use strict';
 
     var modexport = {
         name: "session"

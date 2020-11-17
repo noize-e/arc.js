@@ -1,11 +1,12 @@
 describe("SessionSpec", () => {
     let arc = require('../core/boot');
+    const deps = require('../data/deps');
     let storage = require('../core/storage');
     let session = require('../core/session');
 
-    arc.mods.push(storage)
-    arc.mods.push(session)
-    arc.mod_init();
+    arc.exports(storage)
+    arc.exports(session)
+    arc.init({}, deps);
 
     it("New session should be created", () => {
         arc.session.create()

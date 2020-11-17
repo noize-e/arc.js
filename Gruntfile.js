@@ -3,16 +3,15 @@ const bundler = {
         main: {
 
             src: ['src/core/boot.js',
-                'src/core/importer.js',
-                'src/core/manager.js',
-                'src/core/me.js',
-                'src/core/session.js',
-                'src/core/storage.js',
                 'src/core/util.js',
-                'src/core/model/form-model-view.js',
-                'src/core/model/model-view.js',
+                'src/core/storage.js',
+                'src/core/session.js',
+                'src/core/importer.js',
+                'src/core/models/model-view.js',
+                'src/core/models/form-model-view.js',
                 'src/core/auth/cognito.js',
-                'src/core/xhr/xclient.js'
+                'src/core/xhr/xclient.js',
+                'src/core/me.js'
             ],
             dest: 'pre/<%= bundle %>.js'
         },
@@ -32,7 +31,7 @@ const bundler = {
     uglify: {
         options: {
             compress: {
-                drop_console: true
+                drop_console: false
             },
             banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
                 '<%= today %> */'
@@ -81,11 +80,11 @@ const lastest = {
     copy: {
         main: {
             src: 'dist/<%= bundle %>.min.js',
-            dest: 'dist/lastest/<%= pkg.name %>-<%= pkg.version %>.min.js'
+            dest: 'dist/lastest/<%= pkg.name %>.min.js'
         },
         vendor: {
             src: 'dist/<%= bundle %>.vendor.min.js',
-            dest: 'dist/lastest/<%= pkg.name %>-<%= pkg.version %>.vendor.min.js'
+            dest: 'dist/lastest/<%= pkg.name %>.vendor.min.js'
         }
     }
 };
@@ -113,7 +112,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('lint', ['jshint:afterconcat']);
-    grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy']);
+    grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy:main']);
     grunt.registerTask('vendor', ['concat:vendor', 'uglify:vendor', 'copy:vendor']);
     grunt.registerTask('default', ['concat:main', 'uglify:main', 'copy:main']);
 };

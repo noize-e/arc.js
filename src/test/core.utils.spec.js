@@ -1,9 +1,10 @@
 describe("UtilsSpec", () => {
     var arc = require('../core/boot');
+    const deps = require('../data/deps');
     var utils = require('../core/utils');
 
-    arc.mods.push(utils)
-    arc.mod_init.call(this);
+    arc.exports(utils)
+    arc.init({}, deps);
 
     it("isNull validation should be true", () => {
         var isnull = arc.utils.isNull(null);

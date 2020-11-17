@@ -1,13 +1,22 @@
 describe("CognitoSpec", () => {
     let arc = require('../core/boot');
+    const deps = require('../data/deps');
     let cognito = require('../core/auth/cognito');
 
     let email = "email@server.com";
     let pwd = "hashedpwd";
     let code = "hashcode";
 
-    arc.mods.push(cognito)
-    arc.mod_init();
+    arc.exports(cognito)
+    arc.init({
+        cognito: {
+            poolId: "poolthisid",
+            domain: "mydomain",
+            clientId: "clientd"
+        }
+    }, deps);
+
+    console.log(arc.conf)
 
     it("Cognito should signin", () => {
         arc.cognito.signin(email, pwd, function(result){
