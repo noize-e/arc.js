@@ -1,111 +1,53 @@
 /**
  *
- *  MODELVIEW STRUCTURE
- *
- *  [model:id] > instance mv {
- *      component: {
- *          uid: 'id',
- *          className: 'mockup-classname'
- *      },
- *      uid: 'id',
- *      active: [Function: observable],
- *      loader: [Function: observable],
- *      error: [Function: observable],
- *      log: [Function: log],
- *      on: [Function: on],
- *      showError: [Function: showError],
- *      show: [Function: show],
- *      hide: [Function: hide],
- *      showLoader: [Function: showLoader],
- *      hideLoader: [Function: hideLoader],
- *      init: [Function: init]
- *  }
- *
- * USAGE
- *
- *   let vmod = arc.modelView("id", function(log){
- *       // Extend model object's attributes
- *       this.customObservable = arc.deps.ko.observable()
- *       this.customAttribute = "My custom attribute"
- *   });
- *
- *   // Add event listener before applying bindings
- *   vmod.on = function onEvent(event, data){}
- *
- *   // If ko lib is present, apply dom bindings
- *   vmod.init();
  */
 (function core_models_modelview() {
     'use strict';
 
     var modexport = {
-        name: "new_mv"
+        name: "modelView",
+        peers: ["ko", "document"]
     };
 
     modexport.ref = function(arc) {
-        'use strict';
 
-        var rdy = 0;
+        var _doc = arc.document,
+            _ko = arc.ko;
 
-        var mngr = {
-            reg: function(mdl) {
-                if(!mngr.find(mdl.uid))
-                    arc.mdl[mdl.uid] = mdl;
+        function ModelView(uid, cb){
+            var _manager;
 
-                if (!!rdy)
-                    mdl.init();
+            this.uid = uid;
+            this.loader = _ko.observable(null);
+            this.active = _ko.observable(null);
+            this.msg = _ko.observable(null);
+            this.errmsg = _ko.observable(false);
 
-                mdl.reg(mngr);
+            this._d = _doc.getElementById(uid);
 
-                return mdl;
-            },
-
-            boot: function() {
-                Object.keys(arc.mdl).forEach(function(k) {
-                    arc.mdl[k].init()
-                });
-                rdy++;
-            },
-
-            find: function(n) {
-                if(arc.mdl.indexOf(n) !== -1){
-                    return arc.mdl[n];
-                }
-                return 0;
-            }
-        }
-
-        var mv = function mv(uid, cb){
-            var _doc = arc.deps.document,
-                _ko = arc.deps.ko;
-
-            function _obs(n, v){
+            this.obs = function(n, v){
                 this[n] = _ko.observable(v);
             }
 
-            _obs.apply(this, ['active', false]);
-            _obs.apply(this, ['loader', false]);
-            _obs.apply(this, ['msg', false]);
-
-            this.uid = uid;
-
-            this._u = arc.utils;
-            this._d = _doc.getElementById(uid);
-            this._o = _obs
-
-            this.alert = function(msg){
+            this.notify = function(msg, err){
                 this.msg(msg);
-                setTimeout(
-                    this.msg.bind(null, null),
-                    2000)
+
+                if(arc.isSet(err) && err){
+                    this.errmsg(true);
+                }
+
+                setTimeout(function(){
+                    this.msg(null);
+                    this.errmsg(false);
+                }.bind(this), 2000)
             }
 
             this.on = function on(e, d){
                 console.warn("Implement runtime callback", e, d)
             };
 
-            this.reg = function reg(mngr){
-                this.mngr = mngr;
+            this.reg = function reg(mng){
+                _manager = mng;
             }
 
             this.show = function show() {
@@ -140,15 +82,18 @@
             };
 
             this.init = function initBinding() {
-                try{
-                    _ko.applyBindings(this, this._d);
-                }catch(err){
-                    console.error("Error:initBinding", err)
-                }
+                _ko.applyBindings(this, this._d);
             };
 
-            cb.call(this, function log(msg, dt) {
-                console.log("Log:model:", uid, msg, dt);
+            this.boot = function(){
+                _manager.boot()
+            }
+
+            cb.call(this, function(msg, dt) {
+                console.log(uid, msg, dt);
+            },{
+                hide: this.loader.bind(this, !1),
+                show: this.loader.bind(this, !0),
             });
         };
 
@@ -156,13 +101,12 @@
         function Factory(uid, cb) {
             'use strict';
 
-            var wpr = mngr.find(uid);
-
-            if (!(wpr instanceof mv)) {
-                wpr = mngr.reg(new mv(uid, cb))
+            var mv = arc.find(uid);
+            if (!(mv instanceof ModelView)) {
+                mv = arc.reg(new ModelView(uid, cb))
             }
 
-            return wpr;
+            return mv;
         };
 
         return Factory;

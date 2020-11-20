@@ -2,90 +2,89 @@
 
     var _arc,
         modexport = {
-            name: 'new_fmv'
+            name: 'formModel'
         };
 
     modexport.ref = (function() {
         'use strict';
 
+        var FormModelView = function FormModelView(arc){
 
-        function validateInputsData(callback, context) {
-            return function() {
-                try {
-                    callback.call(context);
-                } catch (error) {
-                    console.error("Error:validateInputsData", error);
-                    // var inputError = context[context.inputError];
-                    // inputError(true);
-                    // setTimeout(function() { inputError(false); }, 2000);
-                    context.on("Input_Error", context.inputError);
-                }
-            };
-        }
-
-        function getInputValue(n) {
-            var iv = this[n]();
-
-            if (!iv) {
-                this.inputError = n + "_error";
-                throw new Error("Error:getInputValue", "R");
+            function _errcatch(callback, ctx) {
+                return function() {
+                    try {
+                        callback.call(ctx);
+                    } catch (error) {
+                        console.error("Error >>", error);
+                        ctx.on("required_input", ctx.inputError);
+                    }
+                };
             }
 
-            return iv.toLowerCase();
-        }
+            function _validate(n) {
+                var iv = this[n]();
 
-        /**
-         * @param::fields  Required input fields
-         * @param::callback  Executed on sumbit and fields validation complete
-         */
-        var FormIO = function FormIO(reqs){
-            this._r = reqs;
-            this._r.forEach(function(fl){
-                this._o.apply(this, [fl, null]);
-                this._o.apply(this, ["$_err".replace('$', fl), false])
-            }, this);
+                if (!iv) {
+                    this.inputError = n + "_err";
+                    throw new Error("Required Field");
+                }
 
-            /**
-             * On submit request executes the input validator
-             *
-             * On a successful validation cycle it calls the
-             * given callback, otherwise throws an exception
-             */
-            this.onSubmit = function() {
-                console.log("Implement submit runtime callback");
+                return iv.toLowerCase();
+            }
+
+            function inputField(uid){
+                this.obs(uid);
+                this.obs("$_err".replace('$', uid), null);
+            }
+
+            var FormIO = function FormIO(fields){
+                fields.forEach(inputField.bind(this), this);
+
+                this.exinput = inputField.bind(this)
+
+                this.formError = function(n, err){
+                    this.msg(err);
+                    this[n](true);
+
+                    setTimeout(function(){
+                        this[n](false);
+                        this.msg(null);
+                    }.bind(this), 2000);
+                }
+
+                /**
+                 * On submit request executes the input validator
+                 *
+                 * On a successful validation cycle it calls the
+                 * given callback, otherwise throws an exception
+                 */
+                this.onSubmit = function() {
+                    console.log("Implement submit runtime callback");
+                };
+
+                this.submit = _errcatch(function(ctx) {
+                    var datafields = {};
+
+                    fields.forEach(function(fl){
+                        datafields[fl] = _validate.call(this, fl);
+                    }, this);
+
+                    this.onSubmit(datafields);
+                }, this);
             };
 
-            this.submit = validateInputsData(function validate(context) {
-                var vs = {};
-
-                this._r.forEach(function(fl){
-                    vs[fl] = getInputValue.call(this, fl);
-                }, this);
-
-                try {
-                    this.onSubmit(vs);
-                } catch (err) {
-                    console.error(err);
-                }
-            }, this);
-        };
-
-        /**
-         * [FormModelView description]
-         * @param {[type]}   identity [description]
-         * @param {[type]}   fields   [description]
-         * @param {Function} callback [description]
-         * @return {Function} model
-         */
-        return function(arc){
-            _arc = arc
-
-            return function(uid, ipts, cb) {
-                var mld = arc.new_mv(uid, cb);
-                FormIO.apply(mld, [ipts]);
+            function Factory(uid, fields, cb) {
+                var mld = arc.modelView(uid, function(log, loader){
+                    FormIO.apply(this, [fields]);
+                    cb.call(this, log, loader)
+                });
                 return mld;
             };
+
+            return Factory
         };
+
+        return FormModelView;
     }());
 
     try{

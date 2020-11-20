@@ -3,20 +3,25 @@ describe("ModelViewSpec", () => {
     const deps = require('../data/deps');
     const modelview = require('../core/models/model-view');
 
-    arc.exports(modelview)
-    arc.init({}, deps);
+    this.ko = deps.ko
+    this.document = deps.document
 
-    it("New ModelView instance should be created", () => {
-        let mv = arc.new_mv("id", function(log){
-            this.customObservable = arc.deps.ko.observable()
+    arc.exports(modelview)
+    arc.init({}, this);
+
+    it("Instance should be created", () => {
+        let home = arc.modelView("home", function(log){
+            // Custom observable
+            this.obs("custom", null);
+            // Custom attribute
             this.customAttribute = "My custom attribute"
         });
 
         // pre-binding
-        mv.on = function onEvent(event, data){}
+        home.on = function onEvent(event, data){}
 
-        mv.mngr.boot()
+        arc.boot();
 
-        expect(mv.uid).toEqual("id")
+        expect(home.uid).toEqual("home")
     });
 });

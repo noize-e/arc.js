@@ -1,11 +1,14 @@
 describe("CognitoSpec", () => {
-    let arc = require('../core/boot');
+    const arc = require('../core/boot');
     const deps = require('../data/deps');
-    let cognito = require('../core/auth/cognito');
+    const cognito = require('../core/auth/cognito');
 
-    let email = "email@server.com";
-    let pwd = "hashedpwd";
-    let code = "hashcode";
+    const email = "email@server.com";
+    const pwd = "hashedpwd";
+    const code = "hashcode";
+
+    this.AWSCognito = deps.aws.AWSCognito
+    this.AmazonCognitoIdentity = deps.aws.AmazonCognitoIdentity
 
     arc.exports(cognito)
     arc.init({
@@ -14,9 +17,7 @@ describe("CognitoSpec", () => {
             domain: "mydomain",
             clientId: "clientd"
         }
-    }, deps);
-
-    console.log(arc.conf)
+    }, this);
 
     it("Cognito should signin", () => {
         arc.cognito.signin(email, pwd, function(result){
