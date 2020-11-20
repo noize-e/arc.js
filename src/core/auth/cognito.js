@@ -2,7 +2,8 @@
 
     var instance,
         modexport = {
-            name: "cognito"
+            name: "cognito",
+            peers: ["AWSCognito", "AmazonCognitoIdentity"]
         };
 
     modexport.ref = (function() {
@@ -18,6 +19,7 @@
             _log;
 
         function Cognito(arc) {
+
             // enforces new
             if (instance) {
                 return instance;
@@ -26,10 +28,12 @@
             _log = arc.log;
             _sess = arc.session;
 
-            this.cognito = arc.deps.aws.cognito;
-            this.cognito.sdk.config.region = arc.conf.cognito.region;
+            this.cognito = arc.AWSCognito;
+            this.cognitoIdentity = arc.AmazonCognitoIdentity;
 
-            _userPool = new this.cognito.identity.CognitoUserPool({
+            this.cognito.config.region = arc.conf.cognito.region;
+
+            _userPool = new this.cognitoIdentity.CognitoUserPool({
                 UserPoolId: arc.conf.cognito.poolId,
                 ClientId: arc.conf.cognito.clientId
             });
@@ -38,7 +42,7 @@
         }
 
         Cognito.prototype._createUser = function(email) {
-            return new this.cognito.identity.CognitoUser({
+            return new this.cognitoIdentity.CognitoUser({
                 Username: email,
                 Pool: _userPool,
             });
@@ -49,7 +53,7 @@
         Cognito.prototype.signin = function(email, password, onSuccess, onFailure) {
             _cognitoUser = this._createUser(email);
             _cognitoUser.authenticateUser(
-                new this.cognito.identity.AuthenticationDetails({
+                new this.cognitoIdentity.AuthenticationDetails({
                     Username: email,
                     Password: password,
                 }), {
@@ -76,7 +80,7 @@
                 _userPassword = value;
             } else {
                 _userAttributes.push(
-                    new this.cognito.identity.CognitoUserAttribute({
+                    new this.cognitoIdentity.CognitoUserAttribute({
                         Name: name,
                         Value: value,
                     }),
