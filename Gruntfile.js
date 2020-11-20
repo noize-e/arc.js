@@ -1,17 +1,20 @@
+const deprecated = [
+    'src/core/utils.js',
+    'src/core/importer.js',
+    'src/core/me.js'
+]
+
 const bundler = {
     concat: {
         main: {
 
             src: ['src/core/boot.js',
-                'src/core/util.js',
                 'src/core/storage.js',
                 'src/core/session.js',
-                'src/core/importer.js',
                 'src/core/models/model-view.js',
                 'src/core/models/form-model-view.js',
                 'src/core/auth/cognito.js',
-                'src/core/xhr/xclient.js',
-                'src/core/me.js'
+                'src/core/xhr/xclient.js'
             ],
             dest: 'pre/<%= bundle %>.js'
         },
