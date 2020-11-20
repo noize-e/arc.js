@@ -17,88 +17,80 @@
     modexport.ref = (function() {
         'use strict';
 
-        var _sess, _log;
+        var clss = function(arc) {
+            var data;
 
-        function Session(arc) {
-            this.memstg = arc.memstg
-            _log = arc.log
+            function Session(){
+                if (!(this instanceof Session)) {
+                    return new Session();
+                }
 
-            // enforces new
-            if (!(this instanceof Session)) {
-                return new Session(arc);
+                this.stg = arc.memstg
+                this.persist = true;
             }
-            // constructor body
+
+            Session.prototype = {
+
+                create: function create(dt) {
+                    this.tms = Math.floor(Date. now() / 1000)
+                    this.stg.add('sess', dt);
+                },
+
+                check: function check() {
+                    data = this.stg.get('sess');
+                    if(arc.isNull(data) && data.hadOwnProperty('id_token')){
+                        return true;
+                    }
+                    return false;
+                },
+
+                getData: function getData() {
+                    return this.stg.get('sess');
+                },
+
+                getIdToken: function getIdToken() {
+                    return this.get('id_token');
+                },
+
+                getAccessToken: function getAccessToken() {
+                    return this.get('access_token');
+                },
+
+                add: function add(prop, value, outside) {
+                    if (!outside) {
+                        data = this.stg.get('sess');
+                        data[prop] = value;
+                        this.stg.add('sess', data);
+                    } else {
+                        this.stg.add(prop, value);
+                    }
+
+                    return value;
+                },
+
+                get: function get(prop) {
+                    data = this.stg.get('sess');
+                    if(data.hasOwnProperty(prop)){
+                        return data[prop];
+                    }
+                    return null;
+                },
+
+                remove: function remove(prop) {
+                    data = this.stg.get('sess');
+                    delete data[prop];
+                    this.stg.add('sess', data);
+                },
+
+                destroy: function destroy() {
+                    this.stg.remove('sess');
+                }
+            };
+
+            return new Session();
         }
 
-        Session.prototype = {
-
-            create: function create(data) {
-                this.memstg.add('sdt', data);
-                _log(1, "<Session::create>", data)
-            },
-
-            check: function check() {
-                try {
-                    _sess = this.memstg.get('sdt');
-                    return _sess != null && _sess.id_token != undefined;
-                } catch (err) {
-                    return null;
-                }
-            },
-
-            getData: function getData() {
-                return this.memstg.get('sdt');
-            },
-
-            getIdToken: function getIdToken() {
-                try {
-                    return this.get('id_token');
-                } catch (err) {
-                    return null;
-                }
-            },
-
-            getAccessToken: function getAccessToken() {
-                try {
-                    return this.get('access_token');
-                } catch (err) {
-                    return null;
-                }
-            },
-
-            add: function add(prop, value, outside) {
-                if (!outside) {
-                    _sess = this.memstg.get('sdt') || {};
-                    _sess[prop] = value;
-                    this.memstg.add('sdt', _sess);
-                } else {
-                    this.memstg.add(prop, value);
-                }
-
-                return value;
-            },
-
-            get: function get(prop) {
-                try {
-                    _sess = this.memstg.get('sdt');
-                    return _sess[prop];
-                } catch (err) {
-                    return null;
-                }
-            },
-
-            remove: function remove(prop) {
-                _sess = this.memstg.get('sdt');
-                delete _sess[prop];
-                this.memstg.add('sdt', _sess);
-            },
-
-            destroy: function destroy() {
-                this.memstg.remove('sdt');
-            }
-        };
-
-        return Session;
+        return clss;
     }());
 
     try{

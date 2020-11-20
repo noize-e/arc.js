@@ -1,16 +1,26 @@
 describe("SessionSpec", () => {
-    let arc = require('../core/boot');
+    const arc = require('../core/boot');
     const deps = require('../data/deps');
-    let storage = require('../core/storage');
-    let session = require('../core/session');
+    const storage = require('../core/storage');
+    const session = require('../core/session');
+
+    this.localStorage = deps.localStorage;
 
     arc.exports(storage)
     arc.exports(session)
-    arc.init({}, deps);
+    arc.init({
+        session: {
+            ctx_glob: true
+        }
+    }, this);
 
-    it("New session should be created", () => {
-        arc.session.create()
-        arc.session.add("data", "mock")
-        expect(arc.session.get("data")).toEqual("mock")
+    it("session should be created", () => {
+        this.session.create({})
+        expect(this.session).toBeDefined()
+    });
+
+    it("data should be added to session", () => {
+        this.session.add("data", "mock")
+        expect(this.session.get("data")).toEqual("mock")
     });
 });
