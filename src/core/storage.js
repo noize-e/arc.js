@@ -9,12 +9,13 @@
 (function core_storage(arc){
 
     var modexport = {
-            name: "memstg"
+            name: "memstg",
+            peers: ["localStorage"]
         },
         item,
-        lstg,
+        storage,
         data = {},
-        log,
+        logger,
         message = "Sorry, it looks like your browser storage has been corrupted.";
         message += " Please clear your local storage by deleting cache and cookies.";
 
@@ -25,32 +26,18 @@
         'use strict'
 
         var Storage = function Storage(arc) {
-            log = arc.log;
-            try {
-                lstg = localStorage;
-            } catch (err) {
-                log(2, "<Storage::construct> Data will not persist in memory");
-                lstg = {
-                    getItem: function getItem(name) {
-                        return data[name];
-                    },
-                    setItem: function setItem(name, item) {
-                        data[name] = item;
-                        return item;
-                    }
-                };
-            }
+            logger = arc.log;
+            storage = arc.localStorage;
         };
 
         Storage.prototype = {
 
             get: function get(name) {
                 try {
-                    item = JSON.parse(lstg.getItem(name));
-                    return item;
+                    return JSON.parse(storage.getItem(name));
                 } catch (e) {
                     if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                        log(2, message);
+                        logger(2, message);
                     }
                 }
 
@@ -59,24 +46,20 @@
 
             add: function add(name, item) {
                 try {
-                    lstg.setItem(name, JSON.stringify(item));
-
-                    return item;
+                    storage.setItem(name, JSON.stringify(item));
                 } catch (e) {
                     if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                        log(2, message);
+                        logger(2, message);
                     }
                 }
-
-                return null;
             },
 
             remove: function remove(name) {
                 try {
-                    lstg.removeItem(name);
+                    storage.removeItem(name);
                 } catch (e) {
                     if (e.name === "NS_ERROR_FILE_CORRUPTED") {
-                        log(2, message);
+                        logger(2, message);
                     }
                 }
             }
