@@ -2,7 +2,11 @@
 
 ###### [_beta_.__`v4.5.5`__]()
 
-__ArcJS__ provides a set of modules to improve front-end UIs development. Designed to let create full interactive UIs in manner of a few minutes. Also provides a handy set of _utils functions_, _dynamic script importing__ and _user authentication__.
+__ArcJS__ provides a set of modules to improve the front-end UIs development process. Designed to work with 3rd party vendor JS libraries like: __KnockoutJS__. Also is not intrusive which leds to be fully compatible with any vendor JS lib like __jQuery__.
+
+## Features
+
+Section on progress...
 
 ## Build 
 
