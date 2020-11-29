@@ -12,7 +12,13 @@
         ko: {
             observable: function observable(args) {
                 // console.log("[mockup] observable", arguments);
-                return this.observable;
+                return function(){
+                    return {
+                        subscribe: function(cb){
+                            cb('{value}');
+                        }
+                    }
+                };
             },
             applyBindings: function applyBindings(args) {
                 // console.log("[mockup] applyBindings", arguments);

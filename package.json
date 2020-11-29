@@ -1,6 +1,6 @@
 {
   "name": "arc",
-  "version": "4.5.1",
+  "version": "4.5.5",
   "lastVersion": "4.4.9",
   "description": "ARC is a javascript framework",
   "main": "index.js",

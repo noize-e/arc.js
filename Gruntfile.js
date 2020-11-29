@@ -27,8 +27,24 @@ const bundler = {
                   'lib/aws/cognito-sdk.min.js',
                   'lib/aws/cognito-identity.min.js'],
             dest: 'pre/<%= bundle %>.vendor.js'
-        }
+        },
 
+        proto: {
+            src: [
+                'src/proto/arc.js',
+                'src/proto/utils.js',
+                'src/proto/core.js',
+                'src/proto/manager.js',
+                'src/mod/sestg.js',
+                'src/mod/systg.js',
+                'src/mod/mvs/base.js',
+                'src/mod/mvs/form.js',
+                'src/mod/cognito.js',
+                'src/mod/xclient.js',
+                'src/export.js'
+            ],
+            dest: 'pre/<%= bundle %>.proto.js'
+        }
     },
 
     uglify: {
@@ -47,6 +63,11 @@ const bundler = {
         vendor: {
             files: {
                 'dist/<%= bundle %>.vendor.min.js': 'pre/<%= bundle %>.vendor.js'
+            }
+        },
+        proto: {
+            files: {
+                'dist/<%= bundle %>.proto.min.js': 'pre/<%= bundle %>.proto.js'
             }
         }
     }
@@ -88,6 +109,10 @@ const lastest = {
         vendor: {
             src: 'dist/<%= bundle %>.vendor.min.js',
             dest: 'dist/lastest/<%= pkg.name %>.vendor.min.js'
+        },
+        proto: {
+            src: 'dist/<%= bundle %>.proto.min.js',
+            dest: 'dist/lastest/<%= pkg.name %>.proto.min.js'
         }
     }
 };
@@ -115,7 +140,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('lint', ['jshint:afterconcat']);
+    grunt.registerTask('proto', ['concat:proto']);
     grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy:main']);
     grunt.registerTask('vendor', ['concat:vendor', 'uglify:vendor', 'copy:vendor']);
-    grunt.registerTask('default', ['concat:main', 'uglify:main', 'copy:main']);
+    grunt.registerTask('default', ['concat:proto', 'uglify:proto', 'copy:proto']);
 };

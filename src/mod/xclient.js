@@ -1,36 +1,13 @@
-/**
- *
- *  CHANGELOG - 7/Nov/2020
- *
- *  1. Modified: XHRClient class name now is XClient.
- *  2. Added: XClient implements  2 new methods: 'put' & 'delete'
- *  3. Added: Test spec: 'src/test/core.xhr.xclient.spec.js'
- *
- *  USAGE
- *
- *      let config = {
- *           api_gateway: {
- *              key: "IJqIDOA6x06SQh9fXtnnNrVhicdu1wH7Zv6Rgvuc",
- *              invoke_url: "https://api-canibal-admin.wirdlog.com/v1"
- *          }
- *      };
- *
- *      let xclient = new XClient();
- *      xclient.setRequestHandler($.ajax);
- *      xclient.setApiSettings(
- *           config.api_gateway.key,
- *           config.api_gateway.invoke_url);
- *
- *      xclient.setAuthorization(Session.getIdToken());
- *
- */
-(function core_xhr_xclient() {
-    var modexport = {
-            name: "xclient"
-        };
+// @module [public] Sestg
+(function(arc) {
+    'use strict';
 
-    modexport.ref = (function() {
+    var xclient = (function(arc) {
         'use strict';
+
+        xclient.ref = "xclient"
+        xclient.public = true
+        xclient.peers = ["jQuery"]
 
         function _typeof(obj) {
             if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -50,23 +27,27 @@
             return _typeof(obj);
         }
 
-        var xclient = function xclient(arc) {
+        function xclient(arc, conf) {
+            if (!(this instanceof xclient)) {
+                return new xclient(arc, conf)
+            }
+
             var _queryString = null,
-                _requestHandler,
-                _invokeUrl = arc.conf.api.gateway.invokeUrl,
-                _httpMethods = arc.conf.api.httpMethods,
+                _requestHandler = arc.jQuery.ajax,
+                _invokeUrl = conf.gateway.invoke_url,
+                _httpMethods = conf.httpMethods,
                 /*
                  * By default all request are treated as 'application/json' type.
                  * For Cross Origin Resource Sharing the 'Allow' header is set
                  * with a wildcard scope.
                  */
                 _requestConfig = {
-                    contentType: arc.conf.api.contentType,
-                    dataType: arc.conf.api.dataType,
-                    headers: arc.conf.api.headers
+                    contentType: conf.contentType,
+                    dataType: conf.dataType,
+                    headers: conf.headers
                 };
 
-                _requestConfig.headers["x-api-key"] = arc.conf.api.gateway.key;
+                _requestConfig.headers["x-api-key"] = conf.gateway.key;
 
 
             function validateHttpMethod(method) {
@@ -83,7 +64,7 @@
 
                     var _queryString = null;
 
-                    if (isNull(rawqs)) {
+                    if (arc.isNull(rawqs)) {
                         return _url;
                     }
 
@@ -111,14 +92,14 @@
 
                     return body;
                 },
-                makeRequest: function makeRequest(_req, completeCallback) {
+                makeRequest: function makeRequest(_req, callback, onError) {
                     _requestConfig.method = validateHttpMethod(_req.method);
                     _requestConfig.url = _clientManager.templateUri(
                         _req.path,
                         _req.queryString
                     ); //if (isSet(_req.payload) && !isNull(_req.payload)) {
 
-                    if (!isNull(_req.payload)) {
+                    if (!arc.isNull(_req.payload)) {
                         _requestConfig.data = _clientManager.parsePayloadBody(_req.payload);
                     } else {
                         _requestConfig.data = null;
@@ -130,11 +111,16 @@
                         }
                     }
 
-                    if (isNull(_requestHandler)) {
+                    if (arc.isNull(_requestHandler)) {
                         throw new Error("InvalidXHR");
                     }
 
-                    _requestHandler(_requestConfig).always(completeCallback);
+                    if(arc.isSet(onError)){
+                        _requestHandler(_requestConfig).done(callback).fail(onError)
+                    }else{
+                        // legacy compatibility
+                        _requestHandler(_requestConfig).always(callback);
+                    }
                 }
             };
             /**
@@ -188,14 +174,15 @@
              *                                Designed to be agnostic to the response code.
              */
 
-            this.get = function(urlPath, queryString, callback) {
+            this.get = function(urlPath, queryString, callback, onError) {
                 _clientManager.makeRequest({
                         path: urlPath,
                         method: "GET",
                         queryString: queryString,
                         payload: null
                     },
-                    callback
+                    callback,
+                    onError
                 );
             };
             /**
@@ -208,47 +195,46 @@
              *                                   Designed to be agnostic to the response code.
              */
 
-            this.post = function(urlPath, queryString, payloadBody, callback) {
+            this.post = function(urlPath, queryString, payloadBody, callback, onError) {
                 _clientManager.makeRequest({
                         path: urlPath,
                         method: "POST",
                         queryString: queryString,
                         payload: payloadBody
                     },
-                    callback
+                    callback,
+                    onError
                 );
             };
 
-            this.put = function(urlPath, queryString, payloadBody, callback) {
+            this.put = function(urlPath, queryString, payloadBody, callback, onError) {
                 _clientManager.makeRequest({
                         path: urlPath,
                         method: "PUT",
                         queryString: queryString,
                         payload: payloadBody
                     },
-                    callback
+                    callback,
+                    onError
                 );
             };
 
-            this.delete = function(urlPath, queryString, payloadBody, callback) {
+            this.delete = function(urlPath, queryString, payloadBody, callback, onError) {
                 _clientManager.makeRequest({
                         path: urlPath,
                         method: "DELETE",
                         queryString: queryString,
                         payload: payloadBody
                     },
-                    callback
+                    callback,
+                    onError
                 );
             };
         };
 
         return xclient;
-    }());
+    }(arc));
 
-    try{
-        module.exports = modexport
-    }catch(err){
-        this.arc.exports(modexport);
-    }
+    arc.add_mod(xclient)
 
-}).apply(this);
+}(this.arc));
