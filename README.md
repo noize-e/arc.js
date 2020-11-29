@@ -6,9 +6,15 @@ __ArcJS__ provides a set of modules to improve the front-end UIs development pro
 
 ## Features
 
-Section on progress...
+- Forms business logic and UIs management, hand by hand with __KnockoutJS__.
+- Users authentication management (username and password flow) with __Amazon Cognito__.
+- RESTful C.R.U.D. request methods client, decorates the __jQuery.ajax__ method.
 
-## Build 
+__Resources__
+
+- [AWS CognitoIdentity](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CognitoIdentity.html)
+
+## Build
 
 Firts lets create the distribution bundle. In order to do that, install node's dependencies. From command line run:
 
