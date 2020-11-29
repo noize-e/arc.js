@@ -32,7 +32,7 @@ To execute the proto spec run:
 >_ npx jasmine .\src\test\proto.arc.spec.js
 ```
 
-To see the installation process check it out theirs [documentation](https://jasmine.github.io/setup/nodejs.html).
+For installation steps walkthrough, see: [Jasmine Docs](https://jasmine.github.io/setup/nodejs.html).
 
 ### Getting Started
 
