@@ -139,7 +139,9 @@
             cachedValues = arc.sestg.get(this.uid) || {}
 
             fields = reMapFields(ids, this);
-            required = fields;
+
+            // deep copy
+            required = JSON.parse(JSON.stringify(fields))
 
             /*// DECORATOR METHODS //*/
 

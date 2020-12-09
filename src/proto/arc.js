@@ -76,7 +76,7 @@
         log(1, msg, data, type)
     }
 
-    arc.warn = function(msg, data) {
+    arc.warn = function(msg, data, type) {
         log(2, msg, data, type)
     }
 
