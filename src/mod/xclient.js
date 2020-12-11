@@ -47,7 +47,8 @@
                     headers: conf.headers
                 };
 
-                _requestConfig.headers["x-api-key"] = conf.gateway.key;
+                if(!arc.isNull(conf.gateway.key))
+                    _requestConfig.headers["x-api-key"] = conf.gateway.key;
 
 
             function validateHttpMethod(method) {
