@@ -5,6 +5,8 @@
     var Utils = (function(arc){
         'use strict';
 
+        arc.u = {}
+
         var instance;
 
         function _instanceof(left, right) {
@@ -136,6 +138,10 @@
             return flt.test(ve);
         }
 
+        function deepCopy(obj){
+            return JSON.parse(JSON.stringify(obj))
+        }
+
 
         // @constructor
         function Utils(arc) {
@@ -145,7 +151,9 @@
 
             instance = this;
 
-            _extend(arc, {
+            var funcs =
+
+            _extend(arc.u,  {
                 isNull: isNull,
                 isSet: isSet,
                 isArray: isArray,
@@ -158,8 +166,15 @@
                 serialize: serialize,
                 instanceof: _instanceof,
                 extend: _extend,
-                owns: owns
+                owns: owns,
+                deepCopy: deepCopy
             }, true);
+
+            /**
+             * Adding utils into roots context
+             * on process of deprecation
+             */
+            _extend(arc, arc.u, true);
         };
 
         return Utils;
