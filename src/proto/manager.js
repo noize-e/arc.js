@@ -2,28 +2,21 @@
 ;(function(arc) {
     'use strict';
 
-    var models = {};
-
-    function Manager() {
-        if (!(this instanceof Manager)) {
-            return new Manager();
-        }
-
-        this.ready = false;
-    }
+    var models = {},
+        ready = false;
 
     function register(model) {
         models[model.uid] = model;
         return model;
     }
 
-    function add_model(model) {
+    function add_model(model, context) {
         model = register(model)
 
         // If ModelManager has already initiliazed the MVs
         // and this new one is added later execute
         // it's init method
-        if (!!this.ready){ model.initBinding(); }
+        if (!!ready){ model.initBinding(); }
 
         return model;
     }
@@ -35,6 +28,13 @@
         return null;
     }
 
+
+    function Manager() {
+        if (!(this instanceof Manager)) {
+            return new Manager();
+        }
+    }
+
     Manager.prototype = arc;
 
     Manager.prototype.boot = function() {
@@ -43,19 +43,21 @@
             md.initBinding()
         });
 
-        this.ready = true;
+        ready = true;
     }
 
-    Manager.prototype.getModel = get_model;
+    Manager.prototype.get_model = function(uid){
+        return get_model(uid)
+    };
 
     Manager.prototype.modelView = function(uid, callback) {
         var mv = this.get_mod("ModelView")
-        return add_model.call(this, mv(uid, callback));
+        return add_model(mv(uid, callback));
     }
 
     Manager.prototype.formView = function (uid, fields, callback){
         var fmv = this.get_mod("FormModelView")
-        return add_model.call(this, fmv(uid, fields, callback));
+        return add_model(fmv(uid, fields, callback));
     }
 
     arc = Manager();

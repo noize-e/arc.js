@@ -52,22 +52,15 @@ describe("protos", () => {
     });
 
 
-    // @Systg
-    it("Data should be added into storage", () => {
-        arc.systg.add("data", "mock")
-        expect(arc.systg.get("data")).toEqual("mock")
-    });
-
-
     // @Sestg
     it("session should be created", () => {
-        arc.sestg.create({})
-        expect(arc.sestg).toBeDefined()
+        arc.session.create({})
+        expect(arc.session).toBeDefined()
     });
 
     it("data should be added to session", () => {
-        arc.sestg.add("data", "mock")
-        expect(arc.sestg.get("data")).toEqual("mock")
+        arc.session.add("data", "mock")
+        expect(arc.session.get("data")).toEqual("mock")
     });
 
 
@@ -75,15 +68,15 @@ describe("protos", () => {
     it("Cognito should signin", () => {
         arc.cognito.signin(email, pwd, function(result){
             arc.cognito.getAuthToken(function(token, attrs) {
-                arc.log("<cognito.getAuthToken>", {
+                arc.c.log("<cognito.getAuthToken>", {
                     token: token,
                     attrs: attrs
                 })
             }, function(err){
-                arc.err(err)
+                arc.c.err(err)
             });
         }, function(err){
-            arc.err(err);
+            arc.c.err(err);
         });
     });
 
@@ -93,25 +86,25 @@ describe("protos", () => {
         arc.cognito.addUserAttribute("phone", "+52")
         arc.cognito.signup(
             function(user) {
-                arc.log("sign-up", user)
+                arc.c.log("sign-up", user)
             }, function(err) {
-                arc.err(err)
+                arc.c.err(err)
             });
     });
 
     it("Cognito should recover password", () => {
         arc.cognito.forgotPassword(email,
             function(data) {
-                arc.log(data)
+                arc.c.log(data)
             }, function(err) {
-                arc.err(err)
+                arc.c.err(err)
             });
 
         arc.cognito.confirmPwd(email, code, pwd,
             function(data) {
-                arc.log(data)
+                arc.c.log(data)
             }, function(err){
-                arc.err(err)
+                arc.c.err(err)
             });
     });
 

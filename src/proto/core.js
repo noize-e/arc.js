@@ -7,7 +7,7 @@
     'use strict';
 
 
-    var Core = (function(arc, utils) {
+    var Core = (function(arc, utils, stdout) {
         'use strict';
 
         /**
@@ -41,8 +41,6 @@
                          * into arc's context will be skipped.
                          */
                         if(!module.hasOwnProperty("carnivorePeers")){
-                            // Add peer into arc's root context
-                            this[peer] = app[peer];
                             // Add peer into arc.d context
                             this.d[peer] = app[peer];
                         }
@@ -59,7 +57,7 @@
 
         // @public
         Core.prototype.add_mod = function(module) {
-            arc.debug("add module: ", module.ref);
+            stdout.debug("add module: ", module.ref);
             rawModules[module.ref] = module;
         }
 
@@ -87,7 +85,7 @@
 
                 modules[mod.ref] = mod;
 
-                arc.debug("loaded module: ", mod.ref);
+                stdout.debug("loaded module: ", mod.ref);
             }
         }
 
@@ -103,7 +101,7 @@
 
         return Core;
 
-    }(arc, arc.u));
+    }(arc, arc.u, arc.c));
 
     arc = Core();
 

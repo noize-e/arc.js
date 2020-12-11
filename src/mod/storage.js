@@ -10,25 +10,26 @@
     // message = "Sorry, it looks like your browser storage has been corrupted.";
     // message += " Please clear your local storage by deleting cache and cookies.";
 
-    var Storage = (function(arc, utils){
+    var Storage = (function(arc, utils, stdout){
         'use strict'
 
-        var item, storage, data = {};
+        var item, stg, lz, data = {};
 
         // @static
-        Storage.ref = "systg";
-        Storage.public = true;
+        Storage.ref = "Storage";
         Storage.peers = ["localStorage"];
 
 
         // @constructor
-        function Storage(arc, conf) {
+        function Storage(arc) {
             // enforces new
             if (!(this instanceof Storage)) {
-                return new Storage(arc, conf);
+                return new Storage(arc);
             }
 
-            storage = arc.d.localStorage
+            stg = arc.d.localStorage;
+            // load string compressor
+            lz = arc.lz;
         };
 
 
@@ -38,19 +39,17 @@
             get: function get(name) {
                 try {
                     var hash = utils.hashCode(name),
-                        item64 = utils.b64d(storage.getItem(hash));
+                        item = (stg.getItem(hash));
 
-                    arc.debug("storage::get", {
+                    stdout.debug("storage::get", {
                         name: hash,
-                        item: item64
+                        item: item
                     });
 
-                    return JSON.parse(item64);
+                    if(!utils.isNull(item))
+                        return JSON.parse(lz.decompressFromUTF16(item));
                 } catch (e) {
-                    arc.err(e, {
-                        action: 'get',
-                        name: name
-                    });
+                    stdout.err("storage::get", e);
                 }
 
                 return null;
@@ -58,40 +57,35 @@
 
             add: function add(name, item) {
                 try {
+                    // On Firefox and IE, localStorage cannot contain invalid UTF16 characters.
+                    // So we need the following:
                     var hash = utils.hashCode(name),
-                        item64 = utils.b64e(JSON.stringify(item));
+                        dataUTF16 = lz.compressToUTF16(JSON.stringify(item));
 
-                    arc.debug("storage::add", {
+                    stdout.debug("storage::add", {
                         name: hash,
-                        item: item64
+                        item: dataUTF16
                     });
 
-                    storage.setItem(hash, item64);
+                    stg.setItem(hash, dataUTF16);
                 } catch (e) {
-                    arc.err(e, {
-                        action: 'add',
-                        name: name,
-                        item: item
-                    });
+                    stdout.err("storage::add", e);
                 }
             },
 
             remove: function remove(name) {
                 try {
                     var hash = utils.hashCode(name);
-                    storage.removeItem(hash);
+                    stg.removeItem(hash);
                 } catch (e) {
-                    arc.err(e, {
-                        action: 'remove',
-                        name: name
-                    });
+                    stdout.err("storage::remove", e);
                 }
             }
         };
 
         return Storage;
 
-    }(arc, arc.u));
+    }(arc, arc.u, arc.c));
 
     arc.add_mod(Storage)
 

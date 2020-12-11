@@ -6,13 +6,12 @@
 ;(function(arc) {
     'use strict';
 
-    var debug = true,
-        conf = {
+    var conf = {
             stdout: {
                 log: true,
-                debug: false,
+                debug: true,
                 warn: true,
-                error: false
+                error: true
             },
             utils: {
                 global: true
@@ -59,7 +58,7 @@
     }
 
 
-    function log(level, msg, data, type){
+    function logger(level, msg, data, type){
         var label = "[$]", action = "log";
         if(level == 2){
             action = "warn";
@@ -84,31 +83,31 @@
     }
 
     // @public
-    arc.log = function(msg, data, type) {
-        if((arc.get_conf("stdout")).log){
-            log(1, msg, data, type)
+    function log(msg, data, type) {
+        if(conf.stdout.log){
+            logger(1, msg, data, type)
         }
     }
 
-    arc.debug = function(msg, data, type) {
-        if((arc.get_conf("stdout")).debug){
-            log(4, msg, data, type)
+    function debug(msg, data, type) {
+        if(conf.stdout.debug){
+            logger(4, msg, data, type)
         }
     }
 
-    arc.warn = function(msg, data, type) {
-        if((arc.get_conf("stdout")).warn){
-            log(2, msg, data, type)
+    function warn(msg, data, type) {
+        if(conf.stdout.warn){
+            logger(2, msg, data, type)
         }
     }
 
-    arc.err = function(msg, data, type) {
-        if((arc.get_conf("stdout")).error){
-            log(3, msg, data, type)
+    function err(msg, data, type) {
+        if(conf.stdout.error){
+            logger(3, msg, data, type)
         }
     }
 
-    arc.datalog = function(data, type) {
+    function datalog(data, type) {
         console.group("datalog")
         if(arc.u.isSet(type) && type == "tree"){
             console.log(data);
@@ -116,6 +115,14 @@
             console.table(data);
         }
         console.groupEnd("datalog")
+    }
+
+    arc.c = {
+        log: log,
+        debug: debug,
+        warn: warn,
+        err: err,
+        datalog: datalog
     }
 
 }(this.arc = this.arc || {}));

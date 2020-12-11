@@ -95,7 +95,7 @@
                         arc.session.add(ctx.uid, cachedValues);
                     }, ctx);
                 } catch (err) {
-                    arc.err(err)
+                    arc.c.err(err)
                 }
             } else {
                 ctx[id] = arc.d.ko.observable()

@@ -2,7 +2,7 @@
 ;(function(arc) {
     'use strict';
 
-    var Cognito = (function(arc) {
+    var Cognito = (function(arc, utils) {
         'use strict';
 
         var _userAttributes = [],
@@ -17,19 +17,19 @@
         Cognito.peers = ["AWSCognito", "AmazonCognitoIdentity"]
 
         function Cognito(arc, conf) {
-            if((arc.isNull(conf.poolId) || conf.poolId == "") ||
-                (arc.isNull(conf.clientId) || conf.clientId == "")){
+            if((utils.isNull(conf.poolId) || conf.poolId == "") ||
+                (utils.isNull(conf.clientId) || conf.clientId == "")){
                 arc.warn("Cognito will not be available")
                 return null;
             }
 
-            if (!arc.instanceof(this, Cognito)) {
+            if (!utils.instanceof(this, Cognito)) {
                 return new Cognito(arc, conf);
             }
 
-            arc.AWSCognito.config.region = conf.region;
+            arc.d.AWSCognito.config.region = conf.region;
 
-            this.sdk = arc.AmazonCognitoIdentity;
+            this.sdk = arc.d.AmazonCognitoIdentity;
 
             _userPool = new this.sdk.CognitoUserPool({
                 UserPoolId: conf.poolId,
@@ -111,10 +111,10 @@
             signOut: function() {
                 try {
                     _userPool.getCurrentUser().signOut();
-                    arc.sestg.destroy();
-                    arc.log("<Cognito.signOut>")
+                    arc.session.destroy();
+                    arc.c.debug("<Cognito.signOut>")
                 } catch(e) {
-                    arc.warn(e)
+                    arc.c.err(e)
                 }
             },
 
@@ -140,7 +140,7 @@
                                             data[attributes[i].Name] = attributes[i].Value;
                                         }
 
-                                        arc.sestg.create(data);
+                                        arc.session.create(data);
                                         resolve(attributes);
                                     }
                                 });
@@ -184,7 +184,7 @@
         }
 
         return Cognito;
-    }(arc));
+    }(arc, arc.u));
 
     arc.add_mod(Cognito)
 

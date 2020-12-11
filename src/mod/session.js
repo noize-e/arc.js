@@ -6,21 +6,20 @@
 (function(arc) {
     'use strict';
 
-    var Session = (function(arc, utils) {
+    var Session = (function(utils) {
         'use strict';
 
         var data, storage;
 
-        Session.ref = "sestg"
+        Session.ref = "session"
         Session.public = true;
-        Session.namespace = "session";
 
         function Session(arc, conf){
             if (!(this instanceof Session)) {
                 return new Session(arc, conf);
             }
 
-            storage = arc.systg;
+            storage = arc.get_mod("Storage")(arc);
         }
 
         Session.prototype = {
@@ -45,8 +44,9 @@
 
             get: function get(prop) {
                 data = storage.get('sess');
-                if(!utils.isNull(data) && utils.isSet(prop) &&
-                    data.hasOwnProperty(prop)){
+                if(!utils.isNull(data) &&
+                    utils.isSet(prop) &&
+                    utils.owns(data, prop)){
                     return data[prop];
                 }
                 return data;
@@ -86,7 +86,7 @@
 
         return Session;
 
-    }(arc, arc.u));
+    }(arc.u));
 
     arc.add_mod(Session)
 

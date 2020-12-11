@@ -2,7 +2,7 @@
 (function(arc) {
     'use strict';
 
-    var xclient = (function(arc) {
+    var xclient = (function(arc, utils) {
         'use strict';
 
         xclient.ref = "xclient"
@@ -33,7 +33,7 @@
             }
 
             var _queryString = null,
-                _requestHandler = arc.jQuery.ajax,
+                _requestHandler = arc.d.jQuery.ajax,
                 _invokeUrl = conf.gateway.invoke_url,
                 _httpMethods = conf.httpMethods,
                 /*
@@ -47,7 +47,7 @@
                     headers: conf.headers
                 };
 
-                if(!arc.isNull(conf.gateway.key))
+                if(!utils.isNull(conf.gateway.key))
                     _requestConfig.headers["x-api-key"] = conf.gateway.key;
 
 
@@ -65,7 +65,7 @@
 
                     var _queryString = null;
 
-                    if (arc.isNull(rawqs)) {
+                    if (utils.isNull(rawqs)) {
                         return _url;
                     }
 
@@ -100,7 +100,7 @@
                         _req.queryString
                     ); //if (isSet(_req.payload) && !isNull(_req.payload)) {
 
-                    if (!arc.isNull(_req.payload)) {
+                    if (!utils.isNull(_req.payload)) {
                         _requestConfig.data = _clientManager.parsePayloadBody(_req.payload);
                     } else {
                         _requestConfig.data = null;
@@ -112,11 +112,11 @@
                         }
                     }
 
-                    if (arc.isNull(_requestHandler)) {
+                    if (utils.isNull(_requestHandler)) {
                         throw new Error("InvalidXHR");
                     }
 
-                    if(arc.isSet(onError)){
+                    if(utils.isSet(onError)){
                         _requestHandler(_requestConfig).done(callback).fail(onError)
                     }else{
                         // legacy compatibility
@@ -234,7 +234,8 @@
         };
 
         return xclient;
-    }(arc));
+
+    }(arc, arc.u));
 
     arc.add_mod(xclient)
 

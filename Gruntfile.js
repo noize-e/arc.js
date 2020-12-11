@@ -63,6 +63,7 @@ const bundler = {
                 'src/proto/utils.js',
                 'src/proto/core.js',
                 'src/proto/manager.js',
+                'src/libs/lz-string.js',
                 'src/mod/storage.js',
                 'src/mod/session.js',
                 'src/mod/mvs/base.js',

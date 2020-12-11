@@ -6,10 +6,8 @@
 ;(function(arc) {
   'use strict';
 
-    var Utils = (function(arc){
+    var Utils = (function(stdout){
         'use strict';
-
-        arc.u = {}
 
         var instance;
 
@@ -94,7 +92,7 @@
                     window.location.href = _url;
                 }
             } catch (err) {
-                console.warn(err);
+                stdout.warn(err);
             }
 
             return _url;
@@ -109,7 +107,7 @@
                     vars[key] = value;
                 });
             } catch (err) {
-                arc.warn("window object not available");
+                stdout.warn("window object not available");
             }
 
             return vars;
@@ -162,10 +160,10 @@
 
         var base64 = {
             encode: function(str){
-                return bufferEncoding(str, 'binary', 'base64')
+                return bufferEncoding(str, 'binary', 'base64');
             },
             decode: function (str) {
-                return bufferEncoding(str, 'base64', 'binary')
+                return bufferEncoding(str, 'base64', 'binary');
             }
         }
 
@@ -178,6 +176,7 @@
 
             instance = this;
 
+            arc.u = {};
             _extend(arc.u,  {
                 isNull: isNull,
                 isSet: isSet,
@@ -193,21 +192,13 @@
                 extend: _extend,
                 owns: owns,
                 deepCopy: deepCopy,
-                hashCode: hashCode,
-                b64e: base64.encode,
-                b64d: base64.decode
+                hashCode: hashCode
             }, true);
-
-            /**
-             * Adding utils into roots context
-             * on process of deprecation
-             */
-            _extend(arc, arc.u, true);
         };
 
         return Utils;
 
-    }(arc));
+    }(arc.c));
 
     Utils(arc);
 

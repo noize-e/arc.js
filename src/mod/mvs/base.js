@@ -4,25 +4,25 @@
 (function(arc) {
     'use strict';
 
-    var ModelView = (function(arc) {
+    var ModelView = (function(arc, utils, stdout) {
         'use strict';
 
         ModelView.ref = "ModelView";
         ModelView.peers = ['ko', 'document'];
 
-        var timer;
+        var timer, peers;
 
         function ModelView(uid, callback){
             if (!(this instanceof ModelView)) {
                 return new ModelView(uid, callback);
             }
 
+            peers = arc.d;
+
             this.uid = uid;
-            this.component = arc.document.getElementById(uid);
-
-            this.active = arc.ko.observable(null);
-
-            this.loader = arc.ko.observable(null);
+            this.component = peers.document.getElementById(uid);
+            this.active = peers.ko.observable(null);
+            this.loader = peers.ko.observable(null);
             this.loaderctl = {
                 hide: this.loader.bind(this, !1),
                 show: this.loader.bind(this, !0),
@@ -38,7 +38,7 @@
              *        ...
              *     </div>
              */
-            this.msg = arc.ko.observable(null);
+            this.msg = peers.ko.observable(null);
             /**
              * If the notification type is error, set this to true to
              * add '{any-error-css-class}' to the msg dom element.
@@ -48,12 +48,12 @@
              *        ...
              *     </div>
              */
-            this.errmsg = arc.ko.observable(false);
+            this.errmsg = peers.ko.observable(false);
 
-            if(arc.isSet(callback) && typeof callback == 'function'){
+            if(utils.isSet(callback) && typeof callback == 'function'){
                 callback.call(this,
                     function(msg, data){
-                        arc.log("<"+uid+"> "+msg, data);
+                        stdout.log("<"+uid+"> "+msg, data);
                     },
                     this.loaderctl);
             }
@@ -62,13 +62,13 @@
 
         ModelView.prototype = {
             obs: function(n, v){
-                this[n] = arc.ko.observable(v);
+                this[n] = peers.ko.observable(v);
             },
 
             notify: function(msg, isError, callback){
                 this.msg(msg);
 
-                if(arc.isSet(isError) && isError){
+                if(utils.isSet(isError) && isError){
                     this.errmsg(true);
                 }
 
@@ -86,7 +86,7 @@
             },
 
             on: function(e, d){
-                arc.warn("Implement runtime callback", [e, d])
+                stdout.warn("Implement runtime callback", [e, d])
             },
 
             show: function() {
@@ -121,12 +121,13 @@
             },
 
             initBinding: function() {
-                arc.ko.applyBindings(this, this.component);
+                peers.ko.applyBindings(this, this.component);
             }
         }
 
         return ModelView;
-    }(arc));
+
+    }(arc, arc.u, arc.c));
 
     arc.add_mod(ModelView)
 
