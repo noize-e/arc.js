@@ -67,29 +67,33 @@
             throw new Error("InvalidModule: ", modname);
         }
 
+        Core.prototype.load_mod = function(mod, app) {
+            var conf = this.get_conf(mod.ref);
+
+            if (checkPeers.call(this, mod, app)) {
+                /**
+                 * Load modules into arc's context
+                 */
+                if(this.owns(mod, 'public')){
+                    this[mod.ref] = mod(arc, conf);
+                    if(this.owns(mod, 'namespace')){
+                        this[mod.namespace] = this[mod.ref];
+                    }
+                }
+
+                modules[mod.ref] = mod;
+
+                arc.debug("loaded module: ", mod.ref);
+            }
+        }
+
         // @public
         Core.prototype.init = function(_conf, app) {
             this.load_conf(_conf);
 
             Object.keys(rawModules).forEach(function(k) {
-                var mod = rawModules[k],
-                    conf = this.get_conf(k);
-
-                if (checkPeers.call(this, mod, app)) {
-                    /**
-                     * Load modules into arc's context
-                     */
-                    if(this.owns(mod, 'public')){
-                        this[mod.ref] = mod(arc, conf);
-                        if(this.owns(mod, 'namespace')){
-                            this[mod.namespace] = this[mod.ref];
-                        }
-                    }
-
-                    modules[mod.ref] = mod;
-
-                    arc.debug("loaded module: ", mod.ref);
-                }
+                var mod = rawModules[k];
+                this.load_mod(mod, app);
             }, this);
         }
 
