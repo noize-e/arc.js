@@ -6,6 +6,11 @@
     var Core = (function(arc) {
         'use strict';
 
+        /**
+         * Modules peers(dependencies) namespacing
+         */
+        arc.d = {}
+
         // @private vars
         var rawModules = {},
             modules = {};
@@ -27,8 +32,15 @@
                             throw new Error("Missing Dependency");
                         }
 
+                        /**
+                         * If this attribute is set, the peers loading
+                         * into arc's context will be skipped.
+                         */
                         if(!module.hasOwnProperty("carnivorePeers")){
+                            // Add peer into arc's root context
                             this[peer] = app[peer];
+                            // Add peer into arc.d context
+                            this.d[peer] = app[peer];
                         }
                     }, this);
                 }
@@ -43,7 +55,7 @@
 
         // @public
         Core.prototype.add_mod = function(module) {
-            arc.log("add module: ", module.ref);
+            arc.debug("add module: ", module.ref);
             rawModules[module.ref] = module;
         }
 
@@ -64,14 +76,19 @@
                     conf = this.get_conf(k);
 
                 if (checkPeers.call(this, mod, app)) {
+                    /**
+                     * Load modules into arc's context
+                     */
                     if(this.owns(mod, 'public')){
                         this[mod.ref] = mod(arc, conf);
                         if(this.owns(mod, 'namespace')){
                             this[mod.namespace] = this[mod.ref];
                         }
                     }
+
                     modules[mod.ref] = mod;
-                    arc.log("loaded module: ", mod.ref);
+
+                    arc.debug("loaded module: ", mod.ref);
                 }
             }, this);
         }
