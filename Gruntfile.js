@@ -2,7 +2,35 @@ const deprecated = [
     'src/core/utils.js',
     'src/core/importer.js',
     'src/core/me.js'
-]
+];
+
+/**
+ * Optional
+ */
+const linter = {
+    js: {
+        afterconcat: ['pre/<%= bundle %>.js']
+    }
+};
+
+const obfuscator = {
+    javascript: {
+        // options: {
+        //   debugProtection: true,
+        //   debugProtectionInterval: true,
+        // },
+        main: {
+            files: {
+                'dist/<%= bundle %>.min.js': ['dist/<%= bundle %>.min.js']
+            }
+        },
+        ext: {
+            files: {
+                'dist/<%= bundle %>.ext.min.js': ['dist/<%= bundle %>.ext.min.js']
+            }
+        }
+    }
+};
 
 const bundler = {
     concat: {
@@ -74,32 +102,6 @@ const bundler = {
 
 };
 
-const linter = {
-    js: {
-        afterconcat: ['pre/<%= bundle %>.js']
-    }
-};
-
-const obfuscator = {
-    javascript: {
-        // options: {
-        //   debugProtection: true,
-        //   debugProtectionInterval: true,
-        // },
-        main: {
-            files: {
-                'dist/<%= bundle %>.min.js': ['dist/<%= bundle %>.min.js']
-            }
-        },
-        ext: {
-            files: {
-                'dist/<%= bundle %>.ext.min.js': ['dist/<%= bundle %>.ext.min.js']
-            }
-        }
-    }
-};
-
-
 const lastest = {
     copy: {
         main: {
@@ -120,6 +122,10 @@ const lastest = {
         }
     }
 };
+
+
+
+
 
 module.exports = function (grunt) {
     'use strict';
@@ -144,8 +150,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
 
     grunt.registerTask('lint', ['jshint:afterconcat']);
-    grunt.registerTask('proto', ['concat:proto']);
-    grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy:main']);
+
+    grunt.registerTask('ofs', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy:main']);
     grunt.registerTask('vendor', ['concat:vendor', 'uglify:vendor', 'copy:vendor']);
-    grunt.registerTask('default', ['concat:proto', 'uglify:proto', 'copy:proto', 'copy:preto']);
+
+    // Package: Proto
+    grunt.registerTask('proto', ['concat:proto', 'uglify:proto', 'copy:proto']);
+    grunt.registerTask('default', ['concat:proto', 'copy:preto']);
 };
