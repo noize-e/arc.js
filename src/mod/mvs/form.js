@@ -1,5 +1,4 @@
-// @module [private] FormModelWrapper
-// @Module FormModelView
+// @module FormModelView
 ;(function(arc) {
     'use strict';
 
@@ -11,7 +10,6 @@
         var cachedValues,
             submitedValues,
             required,
-            optsFields,
             fields;
 
 
@@ -31,10 +29,12 @@
             };
         }
 
+
         // @private
         function _errid(str){
             return "$_err".replace('$', str);
         }
+
 
         // @private
         function validateField(id) {
@@ -57,11 +57,13 @@
         }
 
         // @private
-        function inputField(id, value, arr) {
-            var errid = _errid(id),
+        function createInputField(ctx, attrs) {
+            // attrs: { fieldId:str, fieldValue:{*}, isArrayField:bool }
+            var id = attrs.fieldId,
+                value = attrs.fieldValue || cachedValue,
+                isArrayField =  attrs.isArrayField || !1,
+                errid = _errid(id),
                 cachedValue = cachedValues[id] || null;
-
-            value = value || cachedValue;
 
             /*
              * If the field is password type exclude
@@ -72,27 +74,27 @@
              * the field input type.
              */
             if (!id.match(/pwd|passw/g)) {
-                if(arc.isSet(arr)){
-                    this[id] = arc.ko.observableArray(value);
+                if(arc.isSet(isArrayField)){
+                    ctx[id] = arc.ko.observableArray(value);
                 }else{
-                    this[id] = arc.ko.observable(value);
+                    ctx[id] = arc.ko.observable(value);
                 }
-                this[errid] = arc.ko.observable(false);
+                ctx[errid] = arc.ko.observable(false);
 
                 try {
                     /*
                      * In test-env the subscribe() method isn't defined
                      */
-                    this[id].subscribe(function(value) {    
+                    ctx[id].subscribe(function(value) {    
                         cachedValues[id] = value;
-                        arc.sestg.add(this.uid, cachedValues);
-                    }, this);
+                        arc.session.add(ctx.uid, cachedValues);
+                    }, ctx);
                 } catch (err) {
                     arc.err(err)
                 }
             } else {
-                this[id] = arc.ko.observable()
-                this[errid] = arc.ko.observable(false);
+                ctx[id] = arc.ko.observable()
+                ctx[errid] = arc.ko.observable(false);
             }
         }
 
@@ -105,8 +107,10 @@
             }
         }
 
-        function reMapFields(rawFields, ctx){
-            var mappedFields = [];
+
+        // @private
+        function createFields(ctx, rawFields){
+            var tmpFields = [];
 
             rawFields.forEach(function(field){
                 var keyval, id;
@@ -116,17 +120,22 @@
                     id = keyval[0];
 
                     if(keyval[1] == "array"){
-                        inputField.call(ctx, id, true)
+                        createInputField(ctx, {
+                            fieldId: id,
+                            isArrayField: true
+                        })
                     }
                 }else{
                     id = field;
-                    inputField.call(ctx, id)
+                    createInputField(ctx, {
+                        fieldId: id
+                    })
                 }
 
-                mappedFields.push(id)
+                tmpFields.push(id)
             });
 
-            return mappedFields;
+            return tmpFields;
         }
 
 
@@ -136,24 +145,34 @@
             // From session get stored fields
             // values given the form's id, otherwise
             // create a new data holder for later use
-            cachedValues = arc.sestg.get(this.uid) || {}
+            cachedValues = arc.session.get(this.uid) || {}
 
-            fields = reMapFields(ids, this);
-
+            fields = createFields(this, ids);
             // deep copy
-            required = JSON.parse(JSON.stringify(fields))
+            required = arc.u.deepCopy(fields)
 
             /*// DECORATOR METHODS //*/
 
             // @public
             this.inputError = null;
 
-            this.inputField = inputField.bind(this)
+            this.inputField = function(id, value){
+                createInputField(this, {
+                    fieldId: id,
+                    fieldValue: value
+                });
+                return this;
+            }
 
 
             // @public
             this.arrayField = function(id, value){
-                return inputField.call(this, id, value, true);
+                createInputField(this, {
+                    fieldId: id,
+                    fieldValue: value,
+                    isArrayField: true
+                });
+                return this;
             }
 
 
@@ -178,6 +197,8 @@
 
             // @public
             this.formError = function(id, error, cb) {
+
+                // id format: {*}_err
                 this[id](true);
 
                 // To prevent the creation of many timers
@@ -219,9 +240,9 @@
             // @public
             this.submit = _catch(function() {
                 fields.forEach(validateField.bind(this));
-                this.onSubmit(submitedValues);
                 // clear fields values from session
-                arc.sestg.remove(this.uid)
+                arc.session.remove(this.uid);
+                this.onSubmit(submitedValues);
             }, this);
         }
 

@@ -20,6 +20,9 @@
                     }
                 };
             },
+            observableArray: function(args) {
+                // body...
+            },
             applyBindings: function applyBindings(args) {
                 // console.log("[mockup] applyBindings", arguments);
                 return this.applyBindings;

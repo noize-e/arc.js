@@ -1,4 +1,15 @@
-// @module [public] ModelView
+/**
+ * @module [public] ModelView
+
+    deps:
+        arc.d.ko::observable|applyBindings
+        arc.d.document::getElementById
+        arc.u.isSet
+        arc.log
+        arc.warn
+        arc.add_mod
+ */
+
 (function(arc) {
     'use strict';
 
@@ -8,27 +19,52 @@
         ModelView.ref = "ModelView";
         ModelView.peers = ['ko', 'document'];
 
+        var timer;
+
         function ModelView(uid, callback){
             if (!(this instanceof ModelView)) {
                 return new ModelView(uid, callback);
             }
 
             this.uid = uid;
+            this.component = arc.document.getElementById(uid);
+
+            this.active = arc.ko.observable(null);
+
             this.loader = arc.ko.observable(null);
             this.loaderctl = {
                 hide: this.loader.bind(this, !1),
                 show: this.loader.bind(this, !0),
             }
-            this.active = arc.ko.observable(null);
+
+            /**
+             * Stores and renders by 'text' binding any notification.
+             * On not null adds '{any-notification-css-class}' to
+             *  the DOM element.
+             *
+             * DOM:
+             *     <div data-bind="text: msg, css: {notification: msg}">
+             *        ...
+             *     </div>
+             */
             this.msg = arc.ko.observable(null);
+            /**
+             * If the notification type is error, set this to true to
+             * add '{any-error-css-class}' to the msg dom element.
+             *
+             * DOM:
+             *     <div data-bind="text: msg, css: {error: errmsg, notification: msg}">
+             *        ...
+             *     </div>
+             */
             this.errmsg = arc.ko.observable(false);
-            this.component = arc.document.getElementById(uid);
-            this.tmo;
 
             if(arc.isSet(callback) && typeof callback == 'function'){
-                callback.call(this, function(msg, data){
-                    arc.log("<"+uid+"> "+msg, data);
-                }, this.loaderctl);
+                callback.call(this,
+                    function(msg, data){
+                        arc.log("<"+uid+"> "+msg, data);
+                    },
+                    this.loaderctl);
             }
             return this;
         }
@@ -38,21 +74,22 @@
                 this[n] = arc.ko.observable(v);
             },
 
-            notify: function(msg, err, cb){
+            notify: function(msg, isError, callback){
                 this.msg(msg);
 
-                if(arc.isSet(err) && err){
+                if(arc.isSet(isError) && isError){
                     this.errmsg(true);
                 }
 
-                if(this.tmo)
-                    clearTimeout(this.tmo);
+                if(timer)
+                    clearTimeout(timer);
 
-                this.tmo = setTimeout(function(){
+                timer = setTimeout(function(){
                     this.msg(null);
                     this.errmsg(false);
-                    if(typeof cb === 'function'){
-                        cb(this);
+
+                    if(typeof callback === 'function'){
+                        callback(this);
                     }
                 }.bind(this), 2000);
             },
