@@ -1,11 +1,18 @@
-// @module [public] Arc
+/**
+ * CoreModule: Arc
+ * Namespacing Status:
+ *  arc.u: ok
+ */
 ;(function(arc) {
     'use strict';
 
     var debug = true,
         conf = {
             stdout: {
-                debug: true
+                log: true,
+                debug: false,
+                warn: true,
+                error: false
             },
             utils: {
                 global: true
@@ -48,51 +55,62 @@
 
     // @public
     arc.load_conf = function(_conf) {
-        arc.extend(conf, _conf);
+        arc.u.extend(conf, _conf);
     }
 
 
     function log(level, msg, data, type){
-        var action = "log";
+        var label = "[$]", action = "log";
         if(level == 2){
             action = "warn";
         } else if(level == 3){
             action = "error";
         }
 
-        var label = "[$]".replace("$", action);
-        if(arc.isSet(data) && arc.isObj(data)){
-            console.group(label)
+        if(level == 4){
+            label = label.replace("$", "debug");
+        }else{
+            label = label.replace("$", action);
+        }
+
+        console.group(label)
+        if(arc.u.isSet(data) && arc.u.isObj(data)){
             console[action](":: %s ::", msg);
             console[(type || "table")](data);
-            console.groupEnd(label)
         }else{
-            console[action]("%s :: %s %s ::", label, msg, (data || ""));
+            console[action]("%s :: %s ::", msg, (data || ""));
         }
+        console.groupEnd(label)
     }
 
     // @public
     arc.log = function(msg, data, type) {
-        log(1, msg, data, type)
-    }
-
-    arc.debug = function(msg, data, type) {
-        if((arc.get_conf("stdout")).debug){
+        if((arc.get_conf("stdout")).log){
             log(1, msg, data, type)
         }
     }
 
+    arc.debug = function(msg, data, type) {
+        if((arc.get_conf("stdout")).debug){
+            log(4, msg, data, type)
+        }
+    }
+
     arc.warn = function(msg, data, type) {
-        log(2, msg, data, type)
+        if((arc.get_conf("stdout")).warn){
+            log(2, msg, data, type)
+        }
     }
 
     arc.err = function(msg, data, type) {
-        log(3, msg, data, type)
+        if((arc.get_conf("stdout")).error){
+            log(3, msg, data, type)
+        }
     }
 
     arc.datalog = function(data, type) {
         console.group("datalog")
-        if(arc.isSet(type) && type == "tree"){
+        if(arc.u.isSet(type) && type == "tree"){
             console.log(data);
         }else{
             console.table(data);

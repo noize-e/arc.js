@@ -1,4 +1,8 @@
-// @module [private] Utils
+/**
+ * CoreModule: Utils
+ * Namespacing Status:
+ *  arc.u: ok
+ */
 ;(function(arc) {
   'use strict';
 
@@ -143,6 +147,29 @@
         }
 
 
+        function hashCode(s) {
+          var h = 0, l = s.length, i = 0;
+          if ( l > 0 )
+            while (i < l)
+              h = (h << 5) - h + s.charCodeAt(i++) | 0;
+          return h;
+        };
+
+
+        function bufferEncoding(str, _from, _to){
+            return Buffer.from(str, _from).toString(_to)
+        }
+
+        var base64 = {
+            encode: function(str){
+                return bufferEncoding(str, 'binary', 'base64')
+            },
+            decode: function (str) {
+                return bufferEncoding(str, 'base64', 'binary')
+            }
+        }
+
+
         // @constructor
         function Utils(arc) {
             if (instance) {
@@ -165,7 +192,10 @@
                 instanceof: _instanceof,
                 extend: _extend,
                 owns: owns,
-                deepCopy: deepCopy
+                deepCopy: deepCopy,
+                hashCode: hashCode,
+                b64e: base64.encode,
+                b64d: base64.decode
             }, true);
 
             /**

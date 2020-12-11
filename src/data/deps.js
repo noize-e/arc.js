@@ -40,9 +40,14 @@
                 return item;
             }
 
+            function removeItem(name) {
+                return null;
+            }
+
             return {
                 getItem: getItem,
-                setItem: setItem
+                setItem: setItem,
+                removeItem: removeItem
             }
         }()),
         aws: {

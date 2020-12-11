@@ -1,9 +1,13 @@
-// @module [private] Core
+/**
+ * CoreModule: Core
+ * Namespacing Status:
+ *  arc.u: unknown
+ */
 ;(function(arc){
     'use strict';
 
 
-    var Core = (function(arc) {
+    var Core = (function(arc, utils) {
         'use strict';
 
         /**
@@ -74,9 +78,9 @@
                 /**
                  * Load modules into arc's context
                  */
-                if(this.owns(mod, 'public')){
+                if(utils.owns(mod, 'public')){
                     this[mod.ref] = mod(arc, conf);
-                    if(this.owns(mod, 'namespace')){
+                    if(utils.owns(mod, 'namespace')){
                         this[mod.namespace] = this[mod.ref];
                     }
                 }
@@ -98,7 +102,8 @@
         }
 
         return Core;
-    }(arc));
+
+    }(arc, arc.u));
 
     arc = Core();
 

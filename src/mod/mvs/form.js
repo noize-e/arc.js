@@ -1,9 +1,14 @@
-// @module FormModelView
+/**
+ * Module: FormModelView
+ * Namespacing Status:
+ *  arc.d: ok
+ *  arc.u: ok
+ */
 ;(function(arc) {
     'use strict';
 
     // @Decorator
-    var FormModelWrapper = (function(arc) {
+    var FormModelWrapper = (function(arc, utils) {
         'use strict';
 
         // @private vars
@@ -19,7 +24,7 @@
                 try {
                     callback.call(context);
                 } catch (error) {
-                    if(!arc.isNull(context.inputError)){
+                    if(!utils.isNull(context.inputError)){
                         arc.err(error, context.inputError)
                         context.on("required_input", context.inputError);
                     }else{
@@ -41,13 +46,13 @@
             var value = this[id](),
                 isRequired = (required.indexOf(id) !== -1);
 
-            arc.log("validate", {
+            arc.debug("formView::validateField", {
                 id: id,
                 value: value,
                 required: isRequired
             })
 
-            if ((arc.isNull(value) || !arc.isSet(value) ||
+            if ((utils.isNull(value) || !utils.isSet(value) ||
                 value == "") && isRequired){
                 this.inputError = id + "_err";
                 throw new Error("RequiredField");
@@ -74,12 +79,12 @@
              * the field input type.
              */
             if (!id.match(/pwd|passw/g)) {
-                if(arc.isSet(isArrayField)){
-                    ctx[id] = arc.ko.observableArray(value);
+                if(utils.isSet(isArrayField)){
+                    ctx[id] = arc.d.ko.observableArray(value);
                 }else{
-                    ctx[id] = arc.ko.observable(value);
+                    ctx[id] = arc.d.ko.observable(value);
                 }
-                ctx[errid] = arc.ko.observable(false);
+                ctx[errid] = arc.d.ko.observable(false);
 
                 try {
                     /*
@@ -93,8 +98,8 @@
                     arc.err(err)
                 }
             } else {
-                ctx[id] = arc.ko.observable()
-                ctx[errid] = arc.ko.observable(false);
+                ctx[id] = arc.d.ko.observable()
+                ctx[errid] = arc.d.ko.observable(false);
             }
         }
 
@@ -149,7 +154,7 @@
 
             fields = createFields(this, ids);
             // deep copy
-            required = arc.u.deepCopy(fields)
+            required = utils.deepCopy(fields)
 
             /*// DECORATOR METHODS //*/
 
@@ -185,7 +190,7 @@
 
             // @public
             this.exclude = function(req) {
-                if(arc.isArray(req)){
+                if(utils.isArray(req)){
                     req.forEach(function(id) {
                         rmRequiredField(id);
                     });
@@ -209,10 +214,10 @@
                     this.inputError = null;
                 }.bind(this), 2000)
 
-                if(arc.isSet(error)){
+                if(utils.isSet(error)){
                     this.notify(error, true, function(context) {
                         // this might is buggy. Verify if the id correspond to errId
-                        if(arc.isSet(cb) && arc.isFunc(cb))
+                        if(utils.isSet(cb) && utils.isFunc(cb))
                             cb(context);
                     });
                 }
@@ -248,7 +253,8 @@
 
 
         return FormModelWrapper;
-    }(arc));
+
+    }(arc, arc.u));
 
 
     // @factory

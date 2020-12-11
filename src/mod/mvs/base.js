@@ -1,15 +1,6 @@
 /**
- * @module [public] ModelView
-
-    deps:
-        arc.d.ko::observable|applyBindings
-        arc.d.document::getElementById
-        arc.u.isSet
-        arc.log
-        arc.warn
-        arc.add_mod
+ * Module: ModelView
  */
-
 (function(arc) {
     'use strict';
 
