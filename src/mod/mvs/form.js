@@ -8,7 +8,7 @@
     'use strict';
 
     // @Decorator
-    var FormModelWrapper = (function(arc, utils) {
+    var FormModelWrapper = (function(arc, utils, stdout) {
         'use strict';
 
         // @private vars
@@ -17,7 +17,6 @@
             required,
             fields;
 
-
         // @private
         function _catch(callback, context) {
             return function() {
@@ -25,9 +24,10 @@
                     callback.call(context);
                 } catch (error) {
                     if(!utils.isNull(context.inputError)){
-                        arc.err(error, context.inputError)
+                        stdout.err(error, context.inputError)
                         context.on("required_input", context.inputError);
                     }else{
+                        stdout.err(error)
                         context.on("form_error", error);
                     }
                 }
@@ -46,7 +46,7 @@
             var value = this[id](),
                 isRequired = (required.indexOf(id) !== -1);
 
-            arc.debug("formView::validateField", {
+            stdout.debug("formView::validateField", {
                 id: id,
                 value: value,
                 required: isRequired
@@ -95,7 +95,7 @@
                         arc.session.add(ctx.uid, cachedValues);
                     }, ctx);
                 } catch (err) {
-                    arc.c.err(err)
+                    stdout.err(err)
                 }
             } else {
                 ctx[id] = arc.d.ko.observable()
@@ -156,10 +156,15 @@
             // deep copy
             required = utils.deepCopy(fields)
 
-            /*// DECORATOR METHODS //*/
+            this.evt = {
+                required_input: 'required_input',
+                on_submit: 'on_submit',
+                on_error: 'on_error'
+            }
 
-            // @public
             this.inputError = null;
+
+            /*// DECORATOR METHODS //*/
 
             this.inputField = function(id, value){
                 createInputField(this, {
@@ -167,6 +172,11 @@
                     fieldValue: value
                 });
                 return this;
+            }
+
+
+            this.addEvents = function(evts){
+                utils.extend(this.evt, evts)
             }
 
 
@@ -214,13 +224,11 @@
                     this.inputError = null;
                 }.bind(this), 2000)
 
-                if(utils.isSet(error)){
-                    this.notify(error, true, function(context) {
-                        // this might is buggy. Verify if the id correspond to errId
-                        if(utils.isSet(cb) && utils.isFunc(cb))
-                            cb(context);
-                    });
-                }
+                this.notify(id, true, function(context) {
+                    // this might is buggy. Verify if the id correspond to errId
+                    if(utils.isSet(cb) && utils.isFunc(cb))
+                        cb(context);
+                });
 
                 return this;
             }
@@ -254,7 +262,7 @@
 
         return FormModelWrapper;
 
-    }(arc, arc.u));
+    }(arc, arc.u, arc.c));
 
 
     // @factory

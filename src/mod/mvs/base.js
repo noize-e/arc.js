@@ -4,7 +4,7 @@
 (function(arc) {
     'use strict';
 
-    var ModelView = (function(arc, utils, stdout) {
+    var ModelView = (function(arc, utils, stdout, ext) {
         'use strict';
 
         ModelView.ref = "ModelView";
@@ -66,7 +66,7 @@
             },
 
             notify: function(msg, isError, callback){
-                this.msg(msg);
+                this.msg(ext.labels.get(msg));
 
                 if(utils.isSet(isError) && isError){
                     this.errmsg(true);
@@ -127,7 +127,7 @@
 
         return ModelView;
 
-    }(arc, arc.u, arc.c));
+    }(arc, arc.u, arc.c, arc.e));
 
     arc.add_mod(ModelView)
 

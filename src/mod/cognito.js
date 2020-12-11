@@ -31,6 +31,13 @@
 
             this.sdk = arc.d.AmazonCognitoIdentity;
 
+            this.evt = {
+                not_auth: 'NotAuthorizedException',
+                auth_excep: 'UserNotConfirmedException',
+                usr_exist: "UsernameExistsException",
+                pwd_mismatch: "PasswordMismatchError"
+            }
+
             _userPool = new this.sdk.CognitoUserPool({
                 UserPoolId: conf.poolId,
                 ClientId: conf.clientId
