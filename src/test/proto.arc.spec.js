@@ -1,5 +1,5 @@
 describe("protos", () => {
-    const arc = require('../../pre/4.5.5/2020-11-27/arc-4.5.5.proto');
+    const arc = require('../../pre/proto/arc');
     const deps = require('../data/deps');
 
     this.localStorage = deps.localStorage;

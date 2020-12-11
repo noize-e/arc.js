@@ -113,6 +113,10 @@ const lastest = {
         proto: {
             src: 'dist/<%= bundle %>.proto.min.js',
             dest: 'dist/lastest/<%= pkg.name %>.proto.min.js'
+        },
+        preto: {
+            src: 'pre/<%= bundle %>.proto.js',
+            dest: 'pre/proto/arc.js'
         }
     }
 };
@@ -143,5 +147,5 @@ module.exports = function (grunt) {
     grunt.registerTask('proto', ['concat:proto']);
     grunt.registerTask('prod', ['concat:main', 'uglify:main', 'javascript_obfuscator', 'copy:main']);
     grunt.registerTask('vendor', ['concat:vendor', 'uglify:vendor', 'copy:vendor']);
-    grunt.registerTask('default', ['concat:proto', 'uglify:proto', 'copy:proto']);
+    grunt.registerTask('default', ['concat:proto', 'uglify:proto', 'copy:proto', 'copy:preto']);
 };
