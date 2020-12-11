@@ -151,8 +151,6 @@
 
             instance = this;
 
-            var funcs =
-
             _extend(arc.u,  {
                 isNull: isNull,
                 isSet: isSet,
