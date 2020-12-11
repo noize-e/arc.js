@@ -14,6 +14,7 @@
          * Modules peers(dependencies) namespacing
          */
         arc.d = {}
+        arc.e = {}
 
         // @private vars
         var rawModules = {},
@@ -54,6 +55,12 @@
         }
 
         Core.prototype = arc
+
+        // @public
+        Core.prototype.add_ext = function(namespace, extension) {
+            stdout.debug("add extension: ", [namespace, extension]);
+            this.e[namespace] = extension;
+        }
 
         // @public
         Core.prototype.add_mod = function(module) {
