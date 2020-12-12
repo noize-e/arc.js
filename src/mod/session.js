@@ -25,25 +25,25 @@
         Session.prototype = {
 
             create: function create(data) {
-                storage.add('sess', data);
-                return data;
-            },
-
-            add: function add(prop, value) {
-                var sessData = storage.get('sess');
-
-                if (utils.isNull(sessData)){
-                    data = {};
-                    data[prop] = value;
-                    this.create(data)
-                }else{
-                    sessData[prop] = value;
-                    storage.add('sess', sessData);
+                if(utils.isNull(this.getData())) {
+                    storage.add('sess', data);
                 }
             },
 
+            merge: function merge(ndata) {
+                data = this.getData()
+                utils.extend(data, ndata, true);
+                storage.add('sess', data);
+            },
+
+            add: function add(prop, value) {
+                data = this.getData();
+                data[prop] = value;
+                storage.add('sess', data);
+            },
+
             get: function get(prop) {
-                data = storage.get('sess');
+                data = this.getData();
                 if(!utils.isNull(data) &&
                     utils.isSet(prop) &&
                     utils.owns(data, prop)){
@@ -53,7 +53,7 @@
             },
 
             remove: function remove(prop) {
-                data = storage.get('sess');
+                data = this.getData();
                 delete data[prop];
                 storage.add('sess', data);
             },
