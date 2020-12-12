@@ -56,6 +56,16 @@
             }
         }
 
+        function numberOnly(element) {
+            /**
+             * This removes any other character but numbers as entered by user
+             *
+             * Usage:
+             *  <input type="text" oninput="arc.u.numberOnly(this);" maxlength="3" />
+             */
+            element.value = element.value.replace(/[^0-9]/gi, "");
+        }
+
         function _extend(left, right, merge) {
             Object.keys(right).forEach(function(k) {
                 if (owns(right, k) && !isSet(merge) && !isObj(right[k])) {
@@ -192,7 +202,8 @@
                 extend: _extend,
                 owns: owns,
                 deepCopy: deepCopy,
-                hashCode: hashCode
+                hashCode: hashCode,
+                numberOnly: numberOnly
             }, true);
         };
 

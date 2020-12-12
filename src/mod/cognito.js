@@ -62,7 +62,10 @@
                         Password: password,
                     }), {
                         onSuccess: onSuccess,
-                        onFailure: onFailure,
+                        onFailure: function(err){
+                            arc.c.err(err)
+                            onFailure(err)
+                        }
                     }
                 );
             },
@@ -70,6 +73,7 @@
             resendCode: function(callback) {
                 _cognitoUser.resendConfirmationCode(function(err, result) {
                     if (err) {
+                        arc.c.err(err)
                         return callback('error', err.message || JSON.stringify(err));
                     }
                     callback('success', result);
@@ -95,6 +99,7 @@
                 _userPool.signUp(_userEmail, _userPassword, _userAttributes, null,
                     function(error, result) {
                         if (error) {
+                            arc.c.err(error)
                             onFailure(error);
                         } else {
                             onSuccess(result.user);
@@ -107,6 +112,7 @@
                 this._createUser(email).confirmRegistration(code, true,
                     function(err, result) {
                         if (err) {
+                            arc.c.err(err)
                             onFailure(err);
                         } else {
                             onSuccess(result);
@@ -119,7 +125,6 @@
                 try {
                     _userPool.getCurrentUser().signOut();
                     arc.session.destroy();
-                    arc.c.debug("<Cognito.signOut>")
                 } catch(e) {
                     arc.c.err(e)
                 }
@@ -147,7 +152,7 @@
                                             data[attributes[i].Name] = attributes[i].Value;
                                         }
 
-                                        arc.session.create(data);
+                                        arc.session.merge(data);
                                         resolve(attributes);
                                     }
                                 });
@@ -162,7 +167,7 @@
                     if (_authToken) {
                         onToken(_authToken, attrs);
                     } else {
-                        onInvalidSession('Empty_Token');
+                        onInvalidSession('EmptyToken');
                     }
                 }).catch(onInvalidSession);
             },

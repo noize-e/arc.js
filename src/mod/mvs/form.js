@@ -65,10 +65,10 @@
         function createInputField(ctx, attrs) {
             // attrs: { fieldId:str, fieldValue:{*}, isArrayField:bool }
             var id = attrs.fieldId,
-                value = attrs.fieldValue || cachedValue,
                 isArrayField =  attrs.isArrayField || !1,
                 errid = _errid(id),
-                cachedValue = cachedValues[id] || null;
+                cachedValue = cachedValues[id] || null,
+                value = attrs.fieldValue || cachedValue;
 
             /*
              * If the field is password type exclude
@@ -79,7 +79,7 @@
              * the field input type.
              */
             if (!id.match(/pwd|passw/g)) {
-                if(utils.isSet(isArrayField)){
+                if(isArrayField){
                     ctx[id] = arc.d.ko.observableArray(value);
                 }else{
                     ctx[id] = arc.d.ko.observable(value);
@@ -147,6 +147,8 @@
         // @constructor
         function FormModelWrapper(ids) {
             submitedValues = {};
+
+            arc.session.create({})
             // From session get stored fields
             // values given the form's id, otherwise
             // create a new data holder for later use

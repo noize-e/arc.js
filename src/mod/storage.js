@@ -39,11 +39,11 @@
             get: function get(name) {
                 try {
                     var hash = utils.hashCode(name),
-                        item = (stg.getItem(hash));
+                        item = stg.getItem(hash);
 
                     stdout.debug("storage::get", {
-                        name: hash,
-                        item: item
+                        name: name,
+                        item: lz.decompressFromUTF16(item)
                     });
 
                     if(!utils.isNull(item))
