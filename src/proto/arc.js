@@ -72,14 +72,15 @@
             label = label.replace("$", action);
         }
 
-        console.group(label)
+
         if(arc.u.isSet(data) && arc.u.isObj(data)){
+            console.group(label)
             console[action](":: %s ::", msg);
             console[(type || "table")](data);
+            console.groupEnd(label)
         }else{
-            console[action]("%s :: %s ::", msg, (data || ""));
+            console[action](":: %s ::\n%s", label, msg, (data || ""));
         }
-        console.groupEnd(label)
     }
 
     // @public
@@ -107,22 +108,11 @@
         }
     }
 
-    function datalog(data, type) {
-        console.group("datalog")
-        if(arc.u.isSet(type) && type == "tree"){
-            console.log(data);
-        }else{
-            console.table(data);
-        }
-        console.groupEnd("datalog")
-    }
-
     arc.c = {
         log: log,
         debug: debug,
         warn: warn,
-        err: err,
-        datalog: datalog
+        err: err
     }
 
 }(this.arc = this.arc || {}));

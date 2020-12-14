@@ -37,14 +37,8 @@
                             throw new Error("Missing Dependency");
                         }
 
-                        /**
-                         * If this attribute is set, the peers loading
-                         * into arc's context will be skipped.
-                         */
-                        if(!module.hasOwnProperty("carnivorePeers")){
-                            // Add peer into arc.d context
-                            this.d[peer] = app[peer];
-                        }
+                        // Add peer into arc.d context
+                        this.d[peer] = app[peer];
                     }, this);
                 }
 
@@ -64,16 +58,15 @@
 
         // @public
         Core.prototype.add_mod = function(module) {
-            stdout.debug("add module: ", module.ref);
             rawModules[module.ref] = module;
         }
 
          // @public
         Core.prototype.get_mod = function(modname) {
-            if(modules.hasOwnProperty(modname)){
-                return modules[modname];
+            if(!modules.hasOwnProperty(modname)){
+                return null
             }
-            throw new Error("InvalidModule: ", modname);
+            return modules[modname];
         }
 
         Core.prototype.load_mod = function(mod, app) {
