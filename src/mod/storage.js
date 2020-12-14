@@ -36,40 +36,52 @@
         // @prototype [public]
         Storage.prototype = {
 
-            get: function get(name) {
+            get: function get(name, plain) {
+                var item, hash;
                 try {
-                    var hash = utils.hashCode(name),
-                        item = stg.getItem(hash);
+                    if(utils.isSet(plain)){
+                        // if value was saved as plain mode,
+                        // dont parse it with JSON
+                        return stg.getItem(name)
+                    }else{
+                        hash = utils.hashCode(name);
+                        item = lz.decompressFromUTF16(stg.getItem(hash));
 
-                    stdout.debug("storage::get", {
-                        name: name,
-                        item: lz.decompressFromUTF16(item)
-                    });
+                        stdout.debug("storage::get", {
+                            name: name,
+                            item: item
+                        });
 
-                    if(!utils.isNull(item))
-                        return JSON.parse(lz.decompressFromUTF16(item));
+                        return JSON.parse(item);
+                    }
                 } catch (e) {
-                    stdout.err("storage::get", e);
+                    stdout.warn("storage::get("+name+")", e);
                 }
 
                 return null;
             },
 
-            add: function add(name, item) {
+            add: function add(name, item, plain) {
+                var hash, dataUTF16;
                 try {
-                    // On Firefox and IE, localStorage cannot contain invalid UTF16 characters.
-                    // So we need the following:
-                    var hash = utils.hashCode(name),
+                    if(utils.isSet(plain)){
+                        // Store item in plain mode
+                        stg.setItem(name, item);
+                    }else{
+                        // On Firefox and IE, localStorage cannot contain invalid UTF16 characters.
+                        // So we need the following:
+                        hash = utils.hashCode(name);
                         dataUTF16 = lz.compressToUTF16(JSON.stringify(item));
 
-                    stdout.debug("storage::add", {
-                        name: hash,
-                        item: dataUTF16
-                    });
+                        stdout.debug("storage::add", {
+                            name: hash,
+                            item: dataUTF16
+                        });
 
-                    stg.setItem(hash, dataUTF16);
+                        stg.setItem(hash, dataUTF16);
+                    }
                 } catch (e) {
-                    stdout.err("storage::add", e);
+                    stdout.warn("storage::add("+name+")", e);
                 }
             },
 
@@ -78,7 +90,7 @@
                     var hash = utils.hashCode(name);
                     stg.removeItem(hash);
                 } catch (e) {
-                    stdout.err("storage::remove", e);
+                    stdout.warn("storage::remove("+name+")", e);
                 }
             }
         };
