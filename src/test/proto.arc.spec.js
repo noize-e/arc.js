@@ -20,6 +20,14 @@ describe("protos", () => {
         }
     }, this);
 
+    // @Sestg
+    it("Create new session and add data key & value", () => {
+        arc.session.create({})
+        arc.session.add("data", "mock")
+        expect(arc.session.get("data")).toEqual("mock")
+    });
+
+
     // @ModelView
     it("Instance should be created", () => {
         let home = arc.modelView("home", function(log){
@@ -52,20 +60,8 @@ describe("protos", () => {
     });
 
 
-    // @Sestg
-    it("session should be created", () => {
-        arc.session.create({})
-        expect(arc.session).toBeDefined()
-    });
-
-    it("data should be added to session", () => {
-        arc.session.add("data", "mock")
-        expect(arc.session.get("data")).toEqual("mock")
-    });
-
-
     // @Cognito
-    it("Cognito should signin", () => {
+    xit("Cognito should signin", () => {
         arc.cognito.signin(email, pwd, function(result){
             arc.cognito.getAuthToken(function(token, attrs) {
                 arc.c.log("<cognito.getAuthToken>", {
@@ -80,7 +76,7 @@ describe("protos", () => {
         });
     });
 
-    it("Cognito should signup", () => {
+    xit("Cognito should signup", () => {
         arc.cognito.addUserAttribute("email", email)
         arc.cognito.addUserAttribute("password", pwd)
         arc.cognito.addUserAttribute("phone", "+52")
@@ -92,7 +88,7 @@ describe("protos", () => {
             });
     });
 
-    it("Cognito should recover password", () => {
+    xit("Cognito should recover password", () => {
         arc.cognito.forgotPassword(email,
             function(data) {
                 arc.c.log(data)
@@ -108,7 +104,7 @@ describe("protos", () => {
             });
     });
 
-    it("Cognito should sign out", () => {
+    xit("Cognito should sign out", () => {
         arc.cognito.signOut()
     });
 });
