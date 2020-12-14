@@ -10,19 +10,49 @@
         ModelView.ref = "ModelView";
         ModelView.peers = ['ko', 'document'];
 
-        var timer, peers;
+        var timer, peers, dom, ko;
 
         function ModelView(uid, callback){
+            if(!utils.isSet(callback) || !utils.isFunc(callback)){
+                throw new Error("The callback function is not set correctly.");
+            }
+
             if (!(this instanceof ModelView)) {
                 return new ModelView(uid, callback);
             }
 
-            peers = arc.d;
+            dom = arc.d.document;
+            ko = arc.d.ko
 
-            this.uid = uid;
-            this.component = peers.document.getElementById(uid);
-            this.active = peers.ko.observable(null);
-            this.loader = peers.ko.observable(null);
+            Object.defineProperties(this, {
+                uid: {
+                    value: uid,
+                    writable: false,
+                    configurable: false,
+                    enumerable: true
+                },
+                component: {
+                    value: dom.getElementById(uid),
+                    configurable: false,
+                    enumerable: false,
+                    writable: false
+                },
+                log: {
+                    configurable: false,
+                    enumerable: false,
+                    set: function(v){
+                        throw new Error("log cannot be modified")
+                    },
+                    get: function(){
+                        return function(msg, data){
+                            stdout.log("<"+this.uid+"> "+msg, data);
+                        }.bind(this)
+                    }
+                }
+            });
+
+            this.active = ko.observable(null);
+            this.loader = ko.observable(null);
             this.loaderctl = {
                 hide: this.loader.bind(this, !1),
                 show: this.loader.bind(this, !0),
@@ -38,7 +68,7 @@
              *        ...
              *     </div>
              */
-            this.msg = peers.ko.observable(null);
+            this.msg = ko.observable(null);
             /**
              * If the notification type is error, set this to true to
              * add '{any-error-css-class}' to the msg dom element.
@@ -48,21 +78,22 @@
              *        ...
              *     </div>
              */
-            this.errmsg = peers.ko.observable(false);
+            this.errmsg = ko.observable(false);
 
-            if(utils.isSet(callback) && typeof callback == 'function'){
-                callback.call(this,
-                    function(msg, data){
-                        stdout.log("<"+uid+"> "+msg, data);
-                    },
-                    this.loaderctl);
-            }
-            return this;
+            callback.call(this, this.log, this.loaderctl);
         }
 
         ModelView.prototype = {
             obs: function(n, v){
-                this[n] = peers.ko.observable(v);
+                this[n] = ko.observable(v);
+            },
+
+            observer: function(n, v){
+                this[n] = ko.observable(v);
+            },
+
+            observers: function(n, v){
+                this[n] = ko.observableArray(v);
             },
 
             notify: function(msg, isError, callback){
@@ -79,9 +110,8 @@
                     this.msg(null);
                     this.errmsg(false);
 
-                    if(typeof callback === 'function'){
+                    if(utils.isFunc(callback))
                         callback(this);
-                    }
                 }.bind(this), 2000);
             },
 
@@ -121,7 +151,7 @@
             },
 
             initBinding: function() {
-                peers.ko.applyBindings(this, this.component);
+                ko.applyBindings(this, this.component);
             }
         }
 

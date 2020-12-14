@@ -1,23 +1,21 @@
-/**
- * Module: FormModelView
- * Namespacing Status:
- *  arc.d: ok
- *  arc.u: ok
- */
 ;(function(arc) {
     'use strict';
 
-    // @Decorator
     var FormModelWrapper = (function(arc, utils, stdout) {
         'use strict';
 
-        // @private vars
+
         var cachedValues,
             submitedValues,
             required,
-            fields;
+            fields,
+            events = {
+                required_input: 'required_input',
+                on_submit: 'on_submit',
+                on_error: 'on_error',
+                form_error: 'form_error'
+            };
 
-        // @private
         function _catch(callback, context) {
             return function() {
                 try {
@@ -25,23 +23,21 @@
                 } catch (error) {
                     if(!utils.isNull(context.inputError)){
                         stdout.err(error, context.inputError)
-                        context.on("required_input", context.inputError);
+                        context.on(events.required_input, context.inputError);
                     }else{
                         stdout.err(error)
-                        context.on("form_error", error);
+                        context.on(events.form_error, error);
                     }
                 }
             };
-        }
+        }  // @private
 
 
-        // @private
         function _errid(str){
             return "$_err".replace('$', str);
-        }
+        }  // @private
 
 
-        // @private
         function validateField(id) {
             var value = this[id](),
                 isRequired = (required.indexOf(id) !== -1);
@@ -59,11 +55,17 @@
             }
 
             submitedValues[id] = value;
-        }
+        }  // @private
 
-        // @private
+
+        /**
+         * @private createInputField
+         * @param {object} ctx A ModelView prototype object
+         * @param {object} attrs: { fieldId: {string},
+         *                          fieldValue: {*},
+         *                          isArrayField: {boolean} }
+         */
         function createInputField(ctx, attrs) {
-            // attrs: { fieldId:str, fieldValue:{*}, isArrayField:bool }
             var id = attrs.fieldId,
                 isArrayField =  attrs.isArrayField || !1,
                 errid = _errid(id),
@@ -87,13 +89,10 @@
                 ctx[errid] = arc.d.ko.observable(false);
 
                 try {
-                    /*
-                     * In test-env the subscribe() method isn't defined
-                     */
                     ctx[id].subscribe(function(value) {    
                         cachedValues[id] = value;
                         arc.session.add(ctx.uid, cachedValues);
-                    }, ctx);
+                    }, ctx); // In test-env the subscribe() method isn't defined
                 } catch (err) {
                     stdout.err(err)
                 }
@@ -101,19 +100,17 @@
                 ctx[id] = arc.d.ko.observable()
                 ctx[errid] = arc.d.ko.observable(false);
             }
-        }
+        } // @private
 
 
-        // @private
         function rmRequiredField(id) {
             var idx = required.indexOf(id);
             if(idx !== -1){
                 required.splice(idx, 1);
             }
-        }
+        } // @private
 
 
-        // @private
         function createFields(ctx, rawFields){
             var tmpFields = [];
 
@@ -141,32 +138,58 @@
             });
 
             return tmpFields;
-        }
+        } // @private
 
 
-        // @constructor
         function FormModelWrapper(ids) {
             submitedValues = {};
 
             arc.session.create({})
-            // From session get stored fields
-            // values given the form's id, otherwise
-            // create a new data holder for later use
-            cachedValues = arc.session.get(this.uid) || {}
-
+            /* From session get stored fields
+               values given the form's id, otherwise
+               create a new data holder for later use */
+            cachedValues = arc.session.get(this.uid) || {};
             fields = createFields(this, ids);
-            // deep copy
-            required = utils.deepCopy(fields)
+            required = utils.deepCopy(fields); // deep copy
 
-            this.evt = {
-                required_input: 'required_input',
-                on_submit: 'on_submit',
-                on_error: 'on_error'
-            }
 
-            this.inputError = null;
+            /**
+             * Properties
+             */
 
-            /*// DECORATOR METHODS //*/
+            Object.defineProperties(this, {
+                inputError: {
+                    value: null,
+                    writable: true,
+                    configurable: false,
+                    enumerable: false
+                },
+                required: {
+                    configurable: false,
+                    get: function() {
+                        return required;
+                    },
+                    set: function(ids) {
+                        if(utils.isArray(ids))
+                            required = required.concat(id);
+                        else required.push(id);
+                    }
+                },
+                evt: {
+                    configurable: false,
+                    get: function(){
+                        return events;
+                    },
+                    set: function(evts){
+                        utils.extend(events, evts);
+                    }
+                }
+            })
+
+
+            /**
+             * Methods
+             */
 
             this.inputField = function(id, value){
                 createInputField(this, {
@@ -176,13 +199,6 @@
                 return this;
             }
 
-
-            this.addEvents = function(evts){
-                utils.extend(this.evt, evts)
-            }
-
-
-            // @public
             this.arrayField = function(id, value){
                 createInputField(this, {
                     fieldId: id,
@@ -192,15 +208,6 @@
                 return this;
             }
 
-
-            // @public
-            this.addRequired = function(id) {
-                required.push(id);
-                return required;
-            }
-
-
-            // @public
             this.exclude = function(req) {
                 if(utils.isArray(req)){
                     req.forEach(function(id) {
@@ -211,54 +218,50 @@
                 }
             }
 
+            this.formError = function(id) {
+                if(utils.isSet(id))
+                    this[id](true); // id format: {*}_err
+                else
+                    this[this.inputError](true);
 
-            // @public
-            this.formError = function(id, error, cb) {
-
-                // id format: {*}_err
-                this[id](true);
-
-                // To prevent the creation of many timers
-                // store the input error, then if a new error
-                // comes clear the timer and delete it.
+                /* To prevent the creation of many timers
+                   store the input error, then if a new error
+                   comes clear the timer and delete it. */
                 setTimeout(function(){
                     this[id](false);
                     this.inputError = null;
                 }.bind(this), 2000)
 
-                this.notify(id, true, function(context) {
-                    // this might is buggy. Verify if the id correspond to errId
-                    if(utils.isSet(cb) && utils.isFunc(cb))
-                        cb(context);
-                });
-
-                return this;
+                this.notify(id, true);
             }
 
-
-            // @public
             this.onKeypress = function(data , event){
                 if (event.which == 13) {
-                    //call method here
                     this.submit();
                 }
                 return true;
             }
 
-
-            // @public
             this.onSubmit = function() {
                 arc.warn("Implement onSubmit() runtime callback");
             }
 
 
-            // @public
             this.submit = _catch(function() {
                 fields.forEach(validateField.bind(this));
-                // clear fields values from session
-                arc.session.remove(this.uid);
+                arc.session.remove(this.uid); // clear fields values from session
                 this.onSubmit(submitedValues);
             }, this);
+
+
+            this.addEvents = function(evts){
+                utils.extend(events, evts)
+            } // On deprecation
+
+            this.addRequired = function(id) {
+                required.push(id);
+                return required;
+            } // On deprecation
         }
 
 
@@ -267,7 +270,6 @@
     }(arc, arc.u, arc.c));
 
 
-    // @factory
     var FormModelView = (function(wrapper) {
         'use strict';
 
@@ -283,9 +285,8 @@
 
         return FormModelView;
 
-    }(FormModelWrapper));
+    }(FormModelWrapper)); // factory
 
-    // Add module
-    arc.add_mod(FormModelView)
+    arc.add_mod(FormModelView) // Add module
 
 }(this.arc));
