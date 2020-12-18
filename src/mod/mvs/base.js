@@ -97,7 +97,7 @@
             },
 
             notify: function(msg, isError, callback){
-                this.msg(ext.labels.get(msg));
+                this.msg(ext.labels(msg));
 
                 if(utils.isSet(isError) && isError){
                     this.errmsg(true);

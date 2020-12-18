@@ -4,12 +4,10 @@
  *  arc.u: ok
  */
 ;(function(arc) {
-  'use strict';
+    'use strict';
 
     var Utils = (function(stdout){
         'use strict';
-
-        var instance;
 
         function _instanceof(left, right) {
             if (
@@ -222,40 +220,31 @@
             });
         }
 
+        arc.namespace("u")
 
-        // @constructor
-        function Utils(arc) {
-            if (instance) {
-                return instance;
-            }
-
-            instance = this;
-
-            arc.u = {};
-            _extend(arc.u,  {
-                isNull: isNull,
-                isSet: isSet,
-                isArray: isArray,
-                isEmail: isEmail,
-                isFunc: isFunc,
-                isObj: isObj,
-                goTo: goTo,
-                getUrlVars: getUrlVars,
-                getUrlParam: getUrlParam,
-                serialize: serialize,
-                instanceof: _instanceof,
-                extend: _extend,
-                owns: owns,
-                deepCopy: deepCopy,
-                hashCode: hashCode,
-                numberOnly: numberOnly
-            }, true);
-        };
-
-        return Utils;
+        arc.u.properties({
+            isNull: isNull,
+            isSet: isSet,
+            isArray: isArray,
+            isEmail: isEmail,
+            isFunc: isFunc,
+            isObj: isObj,
+            goTo: goTo,
+            getUrlVars: getUrlVars,
+            getUrlParam: getUrlParam,
+            serialize: serialize,
+            instanceof: _instanceof,
+            extend: _extend,
+            owns: owns,
+            deepCopy: deepCopy,
+            hashCode: hashCode,
+            numberOnly: numberOnly
+        }, {
+            writable: false,
+            configurable: false,
+            enumerable: false
+        }).lock();
 
     }(arc.c));
-
-    Utils(arc);
 
 }(this.arc));

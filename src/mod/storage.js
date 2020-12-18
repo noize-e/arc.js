@@ -1,10 +1,4 @@
-/**
- * Module: Storage(systg)
- * Namespacing Status:
- *  arc.d: ok
- *  arc.u: ok
- */
-(function(arc) {
+;(function(arc) {
     'use strict';
 
     // message = "Sorry, it looks like your browser storage has been corrupted.";

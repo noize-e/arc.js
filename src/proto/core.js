@@ -1,20 +1,14 @@
-/**
- * CoreModule: Core
- * Namespacing Status:
- *  arc.u: unknown
- */
 ;(function(arc){
     'use strict';
 
+    /**
+     * Modules peers(dependencies) namespacing
+     */
+    arc.namespace("e")
+    arc.namespace("d")
 
     var Core = (function(arc, utils, stdout) {
         'use strict';
-
-        /**
-         * Modules peers(dependencies) namespacing
-         */
-        arc.d = {}
-        arc.e = {}
 
         // @private vars
         var rawModules = {},
@@ -33,12 +27,16 @@
             try {
                 if (module.hasOwnProperty("peers")) {
                     module.peers.forEach(function(peer) {
-                        if (!app.hasOwnProperty(peer)) {
+                        if (!app.hasOwnProperty(peer))
                             throw new Error("Missing Dependency");
-                        }
 
                         // Add peer into arc.d context
-                        this.d[peer] = app[peer];
+                        Object.defineProperty(this.d, peer, {
+                            value: app[peer],
+                            writable: false,
+                            configurable: false,
+                            enumerable: false
+                        });
                     }, this);
                 }
 
@@ -70,16 +68,27 @@
         }
 
         Core.prototype.load_mod = function(mod, app) {
-            var conf = this.get_conf(mod.ref);
+            var conf = this.conf(mod.ref);
 
             if (checkPeers.call(this, mod, app)) {
                 /**
                  * Load modules into arc's context
                  */
                 if(utils.owns(mod, 'public')){
-                    this[mod.ref] = mod(arc, conf);
+                    Object.defineProperty(this, mod.ref, {
+                        value: mod(arc, conf),
+                        writable: false,
+                        configurable: false,
+                        enumerable: false
+                    })
+
                     if(utils.owns(mod, 'namespace')){
-                        this[mod.namespace] = this[mod.ref];
+                        Object.defineProperty(this, mod.namespace, {
+                            value: this[mod.ref],
+                            writable: false,
+                            configurable: false,
+                            enumerable: false
+                        });
                     }
                 }
 
@@ -91,11 +100,10 @@
 
         // @public
         Core.prototype.init = function(_conf, app) {
-            this.load_conf(_conf);
+            this.conf = _conf;
 
             Object.keys(rawModules).forEach(function(k) {
-                var mod = rawModules[k];
-                this.load_mod(mod, app);
+                this.load_mod(rawModules[k], app);
             }, this);
         }
 

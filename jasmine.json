@@ -1,14 +1,8 @@
 {
-    "spec_dir": "src/test/",
+    "spec_dir": "test/",
     "spec_files": [
-        "core.storage.spec.js",
-        "core.session.spec.js",
-        "core.models.modelview.spec.js",
-        "core.models.formmodelview.spec.js",
-        "core.auth.cognito.spec.js"
     ],
     "helpers": [
-        "lib/vendor/knockout.min.js"
     ],
     "stopSpecOnExpectationFailure": false,
     "random": true

@@ -1,32 +1,23 @@
 ;(function(arc) {
     'use strict';
 
-    var Labels = (function(utils, stdout) {
-        'use strict';
+    var list = {};
 
-        var list = {};
+    arc.e.property('labels', {
+        get: function(){
+            return function(label) {
+                arc.c.log(label)
 
-        function get(label) {
-            stdout.log(label)
-
-            if(utils.isSet(label) &&
-                list.hasOwnProperty(label)){
-                return list[label]
+                if(arc.u.isSet(label) &&
+                    list.hasOwnProperty(label)){
+                    return list[label]
+                }
+                return label
             }
-            return label
+        },
+        set: function(labels){
+            arc.u.extend(list, labels)
         }
-
-        function add(labels){
-            utils.extend(list, labels)
-        }
-
-        return {
-            get: get,
-            add: add
-        };
-
-    }(arc.u, arc.c));
-
-    arc.add_ext('labels', Labels);
+    });
 
 }(this.arc));
