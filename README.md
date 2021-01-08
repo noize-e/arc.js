@@ -22,7 +22,7 @@ Firts lets create the distribution bundle. In order to do that, install node's d
 >_ npm install
 ```
 
-The install [__Grunt__](https://gruntjs.com/) and run:
+and run:
 
 ```bash
 >_ grunt proto
