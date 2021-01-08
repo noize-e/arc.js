@@ -1,8 +1,7 @@
 ;(function(arc) {
     'use strict';
 
-    var nss = [],
-    conf = {
+    var conf = {
         stdout: {
             log: true,
             debug: true,

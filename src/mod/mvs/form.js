@@ -13,7 +13,8 @@
                 required_input: 'required_input',
                 on_submit: 'on_submit',
                 on_error: 'on_error',
-                form_error: 'form_error'
+                form_error: 'form_error',
+                value_changed: 'value_changed'
             };
 
         function _catch(callback, context) {
@@ -92,6 +93,9 @@
                     ctx[id].subscribe(function(value) {    
                         cachedValues[id] = value;
                         arc.session.add(ctx.uid, cachedValues);
+                        ctx.on(events.value_changed, {
+                            id: id, value: value
+                        })
                     }, ctx); // In test-env the subscribe() method isn't defined
                 } catch (err) {
                     stdout.err(err)
@@ -144,7 +148,6 @@
         function FormModelWrapper(ids) {
             submitedValues = {};
 
-            arc.session.create({})
             /* From session get stored fields
                values given the form's id, otherwise
                create a new data holder for later use */
